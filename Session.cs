@@ -1,15 +1,13 @@
 ﻿using Draygo.API;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Utils;
-//using Sandbox.Game.Screens.Helpers;
-using VRageMath;
-using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
+
+using Stamina.Hud;
 
 namespace Keyspace.Stamina
 {
@@ -19,9 +17,14 @@ namespace Keyspace.Stamina
         public static Stamina_Session Instance;
 
         HudAPIv2 HudApi;
-        HudAPIv2.HUDMessage message;
+        Hud HUD;
 
         private List<IMyPlayer> PlayerList;
+
+        //public override void Init(MyObjectBuilder_SessionComponent sessionComponent)
+        //{
+        //    base.Init(sessionComponent);
+        //}
 
         public override void LoadData()
         {
@@ -29,6 +32,7 @@ namespace Keyspace.Stamina
 
             // TODO: Player-only
             HudApi = new HudAPIv2();
+            HUD = new Hud(HudApi);
 
             // TODO: Offline or dedicated server
             PlayerList = new List<IMyPlayer>();
@@ -73,29 +77,7 @@ namespace Keyspace.Stamina
             // TODO: not on DS
             if (HudApi != null && HudApi.Heartbeat)
             {
-                UpdateHud();
-            }
-        }
-
-        private void UpdateHud()
-        {
-            if (message == null)
-            {
-                string TEXT = $"There are {PlayerList.Count} player(s).";
-                const double SCALE = 1.0;
-                var position = new Vector2D(0.001, 0.001);
-
-                message = new HudAPIv2.HUDMessage(
-                    new StringBuilder(TEXT.Length + 24).Append("<color=255,255,0>").Append(TEXT),
-                    position,
-                    Scale: SCALE,
-                    HideHud: true,
-                    Blend: BlendTypeEnum.PostPP
-                    );
-            }
-            else
-            {
-                // ???
+                HUD.Update(PlayerList.Count);
             }
         }
 

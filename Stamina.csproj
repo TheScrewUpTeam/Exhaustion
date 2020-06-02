@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Hud.cs" />
     <Compile Include="HudAPIv2.cs" />
     <Compile Include="Session.cs" />
   </ItemGroup>
