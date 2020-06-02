@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Draygo.API;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Utils;
+//using Sandbox.Game.Screens.Helpers;
+using VRageMath;
+using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
 
 namespace Keyspace.Stamina
 {
@@ -12,11 +17,21 @@ namespace Keyspace.Stamina
     public class Stamina_Session : MySessionComponentBase
     {
         public static Stamina_Session Instance;
-        private List<IMyPlayer> PlayerList = new List<IMyPlayer>();
+
+        HudAPIv2 HudApi;
+        HudAPIv2.HUDMessage message;
+
+        private List<IMyPlayer> PlayerList;
 
         public override void LoadData()
         {
             Instance = this;
+
+            // TODO: Player-only
+            HudApi = new HudAPIv2();
+
+            // TODO: Offline or dedicated server
+            PlayerList = new List<IMyPlayer>();
         }
 
         public override void BeforeStart()
@@ -27,6 +42,9 @@ namespace Keyspace.Stamina
         protected override void UnloadData()
         {
             Instance = null;
+
+            HudApi.Unload();
+
             PlayerList.Clear();
         }
 
@@ -39,7 +57,7 @@ namespace Keyspace.Stamina
         {
             try
             {
-                //MyAPIGateway.Utilities.ShowNotification($"There are {playerList.Count} players.", 1000, MyFontEnum.Green);
+                UpdatePlayerList();
             }
             catch (Exception e)
             {
@@ -50,11 +68,36 @@ namespace Keyspace.Stamina
             }
         }
 
-        //public override void Draw()
-        //{
-        //    // gets called 60 times a second after all other update methods, regardless of framerate, game pause or MyUpdateOrder.
-        //    // NOTE: this is the only place where the camera matrix (MyAPIGateway.Session.Camera.WorldMatrix) is accurate, everywhere else it's 1 frame behind.
-        //}
+        public override void Draw()
+        {
+            // TODO: not on DS
+            if (HudApi != null && HudApi.Heartbeat)
+            {
+                UpdateHud();
+            }
+        }
+
+        private void UpdateHud()
+        {
+            if (message == null)
+            {
+                string TEXT = $"There are {PlayerList.Count} player(s).";
+                const double SCALE = 1.0;
+                var position = new Vector2D(0.001, 0.001);
+
+                message = new HudAPIv2.HUDMessage(
+                    new StringBuilder(TEXT.Length + 24).Append("<color=255,255,0>").Append(TEXT),
+                    position,
+                    Scale: SCALE,
+                    HideHud: true,
+                    Blend: BlendTypeEnum.PostPP
+                    );
+            }
+            else
+            {
+                // ???
+            }
+        }
 
         //public override void SaveData()
         //{
