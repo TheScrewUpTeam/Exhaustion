@@ -55,7 +55,7 @@ namespace Keyspace.Stamina
             MyLog.Default.WriteLineAndConsole(msg);
             MyAPIGateway.Utilities.ShowNotification(msg, Number);
 
-            return true; // relay packet to other clients (only works if server receives it)
+            return false;
         }
     }
 }

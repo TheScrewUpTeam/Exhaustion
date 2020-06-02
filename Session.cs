@@ -22,6 +22,9 @@ namespace Keyspace.Stamina
         private bool isServer;
         private bool isDedicated;
 
+        int updateCounter;
+        int updatePeriod;
+
         HudAPIv2 HudApi;
         Hud HUD;
 
@@ -43,6 +46,8 @@ namespace Keyspace.Stamina
 
             if (isServer)
             {
+                updateCounter = 0;
+                updatePeriod = 300; // 5 seconds // TODO: configurable!
                 PlayerList = new List<IMyPlayer>();
             }
         }
@@ -76,12 +81,12 @@ namespace Keyspace.Stamina
 
         public override void UpdateAfterSimulation()
         {
-            // example for testing ingame, press L at any point when in a world with this mod loaded
-            // then the server player/console/log will have the message you sent
-            if (MyAPIGateway.Input.IsNewKeyPressed(MyKeys.L))
-            {
-                Networking.SendToServer(new PacketSimpleExample("L was pressed", 5000));
-            }
+            //// example for testing ingame, press L at any point when in a world with this mod loaded
+            //// then the server player/console/log will have the message you sent
+            //if (MyAPIGateway.Input.IsNewKeyPressed(MyKeys.L))
+            //{
+            //    Networking.SendToServer(new PacketSimpleExample("L was pressed", 5000));
+            //}
 
             if (isCreativeGame || !isServer)
             {
@@ -90,14 +95,23 @@ namespace Keyspace.Stamina
 
             try
             {
-                UpdatePlayerList();
+                if (updateCounter >= updatePeriod)
+                {
+                    updateCounter = 0;
+                    UpdatePlayerList();
+                    SendUpdatesToPlayers();
+                }
+                else
+                {
+                    updateCounter++;
+                }
             }
             catch (Exception e)
             {
                 MyLog.Default.WriteLineAndConsole($"{e.Message}\n{e.StackTrace}");
 
                 if (MyAPIGateway.Session?.Player != null)
-                    MyAPIGateway.Utilities.ShowNotification($"[ ERROR: {GetType().FullName}: {e.Message} | Send SpaceEngineers.Log to mod author ]", 10000, MyFontEnum.Red);
+                    MyAPIGateway.Utilities.ShowNotification($"[ ERROR: {GetType().FullName}: {e.Message} | Consider filing a bug report. ]", 10000, MyFontEnum.Red);
             }
         }
 
@@ -111,7 +125,7 @@ namespace Keyspace.Stamina
             if (HudApi != null && HudApi.Heartbeat)
             {
                 // FIXME: _specific_ player
-                HUD.Update(PlayerList[0].Character.SuitEnergyLevel);
+                HUD.Update(updateCounter);
             }
         }
 
@@ -129,6 +143,14 @@ namespace Keyspace.Stamina
         {
             PlayerList.Clear();
             MyAPIGateway.Players.GetPlayers(PlayerList);
+        }
+
+        private void SendUpdatesToPlayers()
+        {
+            foreach (IMyPlayer player in PlayerList)
+            {
+                Networking.SendToPlayer(new PacketSimpleExample("Server says hi.", 5000), player.SteamUserId);
+            }
         }
     }
 }

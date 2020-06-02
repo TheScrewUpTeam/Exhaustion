@@ -16,7 +16,7 @@ namespace Keyspace.Stamina
             HudApi = api;
         }
 
-        public void Update(float number)
+        public void Update(int number)
         {
             if (!HudApi.Heartbeat)
             {
@@ -35,7 +35,7 @@ namespace Keyspace.Stamina
             }
 
             message.Message.Clear();
-            message.Message.Append(Convert.ToInt32(number * 100));
+            message.Message.Append(number);
         }
     }
 }
