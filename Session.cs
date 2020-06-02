@@ -5,9 +5,9 @@ using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
+using VRage.Input;
+using VRage.Library.Utils;
 using VRage.Utils;
-
-using Stamina.Hud;
 
 namespace Keyspace.Stamina
 {
@@ -16,36 +16,53 @@ namespace Keyspace.Stamina
     {
         public static Stamina_Session Instance;
 
+        public Networking Networking = new Networking(1337);
+
+        private bool isCreativeGame;
+        private bool isServer;
+        private bool isDedicated;
+
         HudAPIv2 HudApi;
         Hud HUD;
 
         private List<IMyPlayer> PlayerList;
 
-        //public override void Init(MyObjectBuilder_SessionComponent sessionComponent)
-        //{
-        //    base.Init(sessionComponent);
-        //}
-
         public override void LoadData()
         {
             Instance = this;
 
-            // TODO: Player-only
-            HudApi = new HudAPIv2();
-            HUD = new Hud(HudApi);
+            isCreativeGame = (MyAPIGateway.Session.SessionSettings.GameMode == MyGameModeEnum.Creative);
+            isServer = (MyAPIGateway.Session.OnlineMode == MyOnlineModeEnum.OFFLINE || MyAPIGateway.Multiplayer.IsServer);
+            isDedicated = (MyAPIGateway.Utilities.IsDedicated && isServer);
 
-            // TODO: Offline or dedicated server
-            PlayerList = new List<IMyPlayer>();
+            if (!isDedicated)
+            { 
+                HudApi = new HudAPIv2();
+                HUD = new Hud(HudApi);
+            }
+
+            if (isServer)
+            {
+                PlayerList = new List<IMyPlayer>();
+            }
         }
 
         public override void BeforeStart()
         {
-            UpdatePlayerList();
+            Networking.Register();
+
+            if (isServer)
+            {
+                UpdatePlayerList();
+            }
         }
 
         protected override void UnloadData()
         {
             Instance = null;
+
+            Networking?.Unregister();
+            Networking = null;
 
             HudApi.Unload();
 
@@ -59,6 +76,18 @@ namespace Keyspace.Stamina
 
         public override void UpdateAfterSimulation()
         {
+            // example for testing ingame, press L at any point when in a world with this mod loaded
+            // then the server player/console/log will have the message you sent
+            if (MyAPIGateway.Input.IsNewKeyPressed(MyKeys.L))
+            {
+                Networking.SendToServer(new PacketSimpleExample("L was pressed", 5000));
+            }
+
+            if (isCreativeGame || !isServer)
+            {
+                return;
+            }
+
             try
             {
                 UpdatePlayerList();
@@ -74,9 +103,14 @@ namespace Keyspace.Stamina
 
         public override void Draw()
         {
-            // TODO: not on DS
+            if (isDedicated)
+            {
+                return;
+            }
+
             if (HudApi != null && HudApi.Heartbeat)
             {
+                // FIXME: _specific_ player
                 HUD.Update(PlayerList[0].Character.SuitEnergyLevel);
             }
         }

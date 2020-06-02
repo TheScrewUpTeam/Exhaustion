@@ -35,9 +35,17 @@
   <ItemGroup>
     <Compile Include="Hud.cs" />
     <Compile Include="HudAPIv2.cs" />
+    <Compile Include="Networking.cs" />
+    <Compile Include="NetworkingPackets.cs" />
     <Compile Include="Session.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="ProtoBuf.Net">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\ProtoBuf.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="ProtoBuf.Net.Core">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\ProtoBuf.Net.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Sandbox.Common">
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\Sandbox.Common.dll</HintPath>
     </Reference>

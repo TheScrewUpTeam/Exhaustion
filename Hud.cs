@@ -4,7 +4,7 @@ using System.Text;
 using VRageMath;
 using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
 
-namespace Stamina.Hud
+namespace Keyspace.Stamina
 {
     class Hud
     {
