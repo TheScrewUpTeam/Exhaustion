@@ -51,9 +51,11 @@ namespace Keyspace.Stamina
 
         public override bool Received()
         {
-            var msg = $"PacketSimpleExample received: Text='{Text}'; Number={Number}";
-            MyLog.Default.WriteLineAndConsole(msg);
-            MyAPIGateway.Utilities.ShowNotification(msg, Number);
+            //var msg = $"PacketSimpleExample received: Text='{Text}'; Number={Number}";
+            //MyLog.Default.WriteLineAndConsole(msg);
+            //MyAPIGateway.Utilities.ShowNotification(msg, Number);
+
+            Stamina_Session.Instance.HUD?.Update(Number);
 
             return false;
         }

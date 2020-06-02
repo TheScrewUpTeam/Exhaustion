@@ -5,7 +5,6 @@ using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
-using VRage.Input;
 using VRage.Library.Utils;
 using VRage.Utils;
 
@@ -16,7 +15,7 @@ namespace Keyspace.Stamina
     {
         public static Stamina_Session Instance;
 
-        public Networking Networking = new Networking(1337);
+        public Networking Networking = new Networking(31337);
 
         private bool isCreativeGame;
         private bool isServer;
@@ -25,8 +24,8 @@ namespace Keyspace.Stamina
         int updateCounter;
         int updatePeriod;
 
-        HudAPIv2 HudApi;
-        Hud HUD;
+        internal HudAPIv2 HudApi;
+        internal Hud HUD;
 
         private List<IMyPlayer> PlayerList;
 
@@ -47,7 +46,7 @@ namespace Keyspace.Stamina
             if (isServer)
             {
                 updateCounter = 0;
-                updatePeriod = 300; // 5 seconds // TODO: configurable!
+                updatePeriod = 60 * 5; // 5 seconds // TODO: configurable!
                 PlayerList = new List<IMyPlayer>();
             }
         }
@@ -81,13 +80,6 @@ namespace Keyspace.Stamina
 
         public override void UpdateAfterSimulation()
         {
-            //// example for testing ingame, press L at any point when in a world with this mod loaded
-            //// then the server player/console/log will have the message you sent
-            //if (MyAPIGateway.Input.IsNewKeyPressed(MyKeys.L))
-            //{
-            //    Networking.SendToServer(new PacketSimpleExample("L was pressed", 5000));
-            //}
-
             if (isCreativeGame || !isServer)
             {
                 return;
@@ -95,15 +87,16 @@ namespace Keyspace.Stamina
 
             try
             {
-                if (updateCounter >= updatePeriod)
+                if (updateCounter < updatePeriod)
+                {
+                    updateCounter++;
+                    
+                }
+                else
                 {
                     updateCounter = 0;
                     UpdatePlayerList();
                     SendUpdatesToPlayers();
-                }
-                else
-                {
-                    updateCounter++;
                 }
             }
             catch (Exception e)
@@ -122,10 +115,10 @@ namespace Keyspace.Stamina
                 return;
             }
 
-            if (HudApi != null && HudApi.Heartbeat)
+            // Updates are in packet handlers, just display business here.
+            if (HudApi != null && HudApi.Heartbeat && HUD.refreshNeeded)
             {
-                // FIXME: _specific_ player
-                HUD.Update(updateCounter);
+                HUD.Refresh();
             }
         }
 
@@ -141,6 +134,7 @@ namespace Keyspace.Stamina
 
         private void UpdatePlayerList()
         {
+            // TODO: add/remove dynamically?
             PlayerList.Clear();
             MyAPIGateway.Players.GetPlayers(PlayerList);
         }
@@ -149,7 +143,8 @@ namespace Keyspace.Stamina
         {
             foreach (IMyPlayer player in PlayerList)
             {
-                Networking.SendToPlayer(new PacketSimpleExample("Server says hi.", 5000), player.SteamUserId);
+                float staminaMock = player.Character.SuitEnergyLevel * 100.0f + player.Character.Integrity;
+                Networking.SendToPlayer(new PacketSimpleExample("Server says hi.", Convert.ToInt32(staminaMock)), player.SteamUserId);
             }
         }
     }

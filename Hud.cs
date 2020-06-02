@@ -8,20 +8,34 @@ namespace Keyspace.Stamina
 {
     class Hud
     {
-        HudAPIv2 HudApi;
-        HudAPIv2.HUDMessage message;
+        private HudAPIv2 HudApi;
+        private HudAPIv2.HUDMessage message;
+        
+        private int number;
+        internal bool refreshNeeded;
 
         public Hud(HudAPIv2 api)
         {
             HudApi = api;
+
+            number = 0;
+            refreshNeeded = false;
         }
 
-        public void Update(int number)
+        public void Update(int num)
+        {
+            number = num;
+            refreshNeeded = true;
+        }
+
+        public void Refresh()
         {
             if (!HudApi.Heartbeat)
             {
                 return;
             }
+
+            refreshNeeded = false;
 
             if (message == null)
             {
