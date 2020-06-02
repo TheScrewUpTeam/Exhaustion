@@ -28,6 +28,7 @@ namespace Keyspace.Stamina
         internal Hud HUD;
 
         private List<IMyPlayer> PlayerList;
+        Dictionary<ulong, PlayerStats> PlayerStatsDict;
 
         public override void LoadData()
         {
@@ -48,6 +49,7 @@ namespace Keyspace.Stamina
                 updateCounter = 0;
                 updatePeriod = 60 * 5; // 5 seconds // TODO: configurable!
                 PlayerList = new List<IMyPlayer>();
+                PlayerStatsDict = new Dictionary<ulong, PlayerStats>();
             }
         }
 
@@ -68,9 +70,11 @@ namespace Keyspace.Stamina
             Networking?.Unregister();
             Networking = null;
 
-            HudApi.Unload();
+            HudApi?.Unload();
+            // TODO: HUD?.Unload();
 
-            PlayerList.Clear();
+            PlayerList?.Clear();
+            PlayerStatsDict?.Clear();
         }
 
         //public override void HandleInput()
@@ -96,6 +100,7 @@ namespace Keyspace.Stamina
                 {
                     updateCounter = 0;
                     UpdatePlayerList();
+                    UpdateAllPlayerStats();
                     SendUpdatesToPlayers();
                 }
             }
@@ -139,12 +144,36 @@ namespace Keyspace.Stamina
             MyAPIGateway.Players.GetPlayers(PlayerList);
         }
 
+        private void UpdateAllPlayerStats()
+        {
+            foreach (IMyPlayer player in PlayerList)
+            {
+                ulong steamId = player.SteamUserId;
+
+                float staminaMock = player.Character.SuitEnergyLevel * 100.0f + player.Character.Integrity;
+
+                if (!PlayerStatsDict.ContainsKey(steamId))
+                {
+                    PlayerStatsDict.Add(steamId, new PlayerStats(staminaMock));
+                }
+                else
+                {
+                    PlayerStatsDict[steamId].Stamina = staminaMock;
+                }
+            }
+        }
+
         private void SendUpdatesToPlayers()
         {
             foreach (IMyPlayer player in PlayerList)
             {
-                float staminaMock = player.Character.SuitEnergyLevel * 100.0f + player.Character.Integrity;
-                Networking.SendToPlayer(new PacketSimpleExample("Server says hi.", Convert.ToInt32(staminaMock)), player.SteamUserId);
+                ulong steamId = player.SteamUserId;
+                Networking.SendToPlayer(
+                    new PacketSimpleExample(
+                        "Stamina mock!",
+                        Convert.ToInt32(PlayerStatsDict[steamId].Stamina)),
+                    steamId
+                    );
             }
         }
     }
