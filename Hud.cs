@@ -1,4 +1,5 @@
 ﻿using Draygo.API;
+using System;
 using System.Text;
 using VRageMath;
 using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
@@ -15,7 +16,7 @@ namespace Stamina.Hud
             HudApi = api;
         }
 
-        public void Update(int number)
+        public void Update(float number)
         {
             if (!HudApi.Heartbeat)
             {
@@ -24,22 +25,17 @@ namespace Stamina.Hud
 
             if (message == null)
             {
-                string TEXT = $"There are {number} player(s).";
-                const double SCALE = 1.0;
-                var position = new Vector2D(-0.95, 0.95);
-
                 message = new HudAPIv2.HUDMessage(
-                    new StringBuilder(TEXT.Length + 24).Append("<color=255,255,0>").Append(TEXT),
-                    position,
-                    Scale: SCALE,
+                    Message: new StringBuilder(4),
+                    Origin: new Vector2D(-0.95, 0.95),
+                    Scale: 1.0,
                     HideHud: true,
                     Blend: BlendTypeEnum.PostPP
                     );
             }
-            else
-            {
-                // ???
-            }
+
+            message.Message.Clear();
+            message.Message.Append(Convert.ToInt32(number * 100));
         }
     }
 }

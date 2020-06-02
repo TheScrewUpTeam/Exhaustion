@@ -77,7 +77,7 @@ namespace Keyspace.Stamina
             // TODO: not on DS
             if (HudApi != null && HudApi.Heartbeat)
             {
-                HUD.Update(PlayerList.Count);
+                HUD.Update(PlayerList[0].Character.SuitEnergyLevel);
             }
         }
 
