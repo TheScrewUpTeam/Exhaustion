@@ -150,15 +150,13 @@ namespace Keyspace.Stamina
             {
                 ulong steamId = player.SteamUserId;
 
-                float staminaMock = player.Character.SuitEnergyLevel * 100.0f + player.Character.Integrity;
-
                 if (!PlayerStatsDict.ContainsKey(steamId))
                 {
-                    PlayerStatsDict.Add(steamId, new PlayerStats(staminaMock));
+                    PlayerStatsDict.Add(steamId, new PlayerStats());
                 }
                 else
                 {
-                    PlayerStatsDict[steamId].Stamina = staminaMock;
+                    PlayerStatsDict[steamId].Update(player);
                 }
             }
         }

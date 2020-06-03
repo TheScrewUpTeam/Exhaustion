@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using VRage.Game.ModAPI;
 
 namespace Keyspace.Stamina
 {
@@ -12,12 +8,18 @@ namespace Keyspace.Stamina
 
         public PlayerStats(float stamina)
         {
-            this.Stamina = stamina;
+            Stamina = stamina;
         }
 
         public PlayerStats()
         {
             Stamina = 1.0f;
+        }
+
+        public void Update(IMyPlayer player)
+        {
+            // TODO: proper calc, this here a mock
+            Stamina = player.Character.SuitEnergyLevel * 100.0f + player.Character.Integrity;
         }
     }
 }
