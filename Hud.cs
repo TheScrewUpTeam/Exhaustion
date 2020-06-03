@@ -9,25 +9,41 @@ namespace Keyspace.Stamina
     class Hud
     {
         private HudAPIv2 HudApi;
-        private HudAPIv2.HUDMessage message;
-        
-        private int number;
+        private HudAPIv2.HUDMessage hudMessage;
+
+        private int stamina;
+
         internal bool refreshNeeded;
 
         public Hud(HudAPIv2 api)
         {
             HudApi = api;
 
-            number = 0;
+            stamina = 0;
             refreshNeeded = false;
         }
 
-        public void Update(int num)
+        /// <summary>
+        /// Clean up references when exiting game.
+        /// </summary>
+        public void Unload()
         {
-            number = num;
+            // we didn't initialise this, so don't unload it either
+            HudApi = null;
+        }
+
+        /// <summary>
+        /// Update tracked data; refreshing the display is done in Refresh().
+        /// </summary>
+        public void Update(float num)
+        {
+            stamina = Convert.ToInt32(num);
             refreshNeeded = true;
         }
 
+        /// <summary>
+        /// Refresh the stats display using latest data.
+        /// </summary>
         public void Refresh()
         {
             if (!HudApi.Heartbeat)
@@ -35,12 +51,10 @@ namespace Keyspace.Stamina
                 return;
             }
 
-            refreshNeeded = false;
-
-            if (message == null)
+            if (hudMessage == null)
             {
-                message = new HudAPIv2.HUDMessage(
-                    Message: new StringBuilder(4),
+                hudMessage = new HudAPIv2.HUDMessage(
+                    Message: new StringBuilder(5),
                     Origin: new Vector2D(-0.95, 0.95),
                     Scale: 1.0,
                     HideHud: true,
@@ -48,8 +62,10 @@ namespace Keyspace.Stamina
                     );
             }
 
-            message.Message.Clear();
-            message.Message.Append(number);
+            hudMessage.Message.Clear();
+            hudMessage.Message.Append(stamina);
+
+            refreshNeeded = false;
         }
     }
 }

@@ -70,8 +70,8 @@ namespace Keyspace.Stamina
             Networking?.Unregister();
             Networking = null;
 
+            HUD?.Unload();
             HudApi?.Unload();
-            // TODO: HUD?.Unload();
 
             PlayerList?.Clear();
             PlayerStatsDict?.Clear();
@@ -169,9 +169,7 @@ namespace Keyspace.Stamina
             {
                 ulong steamId = player.SteamUserId;
                 Networking.SendToPlayer(
-                    new PacketSimpleExample(
-                        "Stamina mock!",
-                        Convert.ToInt32(PlayerStatsDict[steamId].Stamina)),
+                    new StatsPacket(PlayerStatsDict[steamId].Stamina),
                     steamId
                     );
             }

@@ -8,7 +8,7 @@ using VRage.Utils;
 namespace Keyspace.Stamina
 {
     // tag numbers in ProtoInclude collide with numbers from ProtoMember in the same class, therefore they must be unique.
-    [ProtoInclude(1000, typeof(PacketSimpleExample))]
+    [ProtoInclude(1000, typeof(StatsPacket))]
     [ProtoContract]
     public abstract class PacketBase
     {
@@ -32,28 +32,24 @@ namespace Keyspace.Stamina
     // An example packet extending another packet.
     // Note that it must be ProtoIncluded in PacketBase for it to work.
     [ProtoContract]
-    public class PacketSimpleExample : PacketBase
+    public class StatsPacket : PacketBase
     {
-        public PacketSimpleExample() { } // Empty constructor required for deserialization
+        public StatsPacket() { } // Empty constructor required for deserialization
 
         // tag numbers in this class won't collide with tag numbers from the base class
         [ProtoMember(1)]
-        public string Text;
+        public float Number;
 
-        [ProtoMember(2)]
-        public int Number;
-
-        public PacketSimpleExample(string text, int number)
+        public StatsPacket(float number)
         {
-            Text = text;
             Number = number;
         }
 
         public override bool Received()
         {
-            var msg = $"PacketSimpleExample received: Text='{Text}'; Number={Number}";
-            MyLog.Default.WriteLineAndConsole(msg);
-            MyAPIGateway.Utilities.ShowNotification(msg, Number);
+            //var msg = $"StatsPacket received: Number={Number}";
+            //MyLog.Default.WriteLineAndConsole(msg);
+            //MyAPIGateway.Utilities.ShowNotification(msg, Number);
 
             Stamina_Session.Instance.HUD?.Update(Number);
 
