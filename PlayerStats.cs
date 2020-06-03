@@ -19,7 +19,7 @@ namespace Keyspace.Stamina
         public void Update(IMyPlayer player)
         {
             // TODO: proper calc, this here a mock
-            Stamina = player.Character.SuitEnergyLevel * 100.0f + player.Character.Integrity;
+            Stamina = player.Character.SuitEnergyLevel + player.Character.Integrity / 100.0f;
         }
     }
 }

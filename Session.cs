@@ -94,14 +94,13 @@ namespace Keyspace.Stamina
                 if (updateCounter < updatePeriod)
                 {
                     updateCounter++;
-                    
                 }
                 else
                 {
                     updateCounter = 0;
                     UpdatePlayerList();
                     UpdateAllPlayerStats();
-                    SendUpdatesToPlayers();
+                    SendUpdatesToAllPlayers();
                 }
             }
             catch (Exception e)
@@ -121,7 +120,7 @@ namespace Keyspace.Stamina
             }
 
             // Updates are in packet handlers, just display business here.
-            if (HudApi != null && HudApi.Heartbeat && HUD.refreshNeeded)
+            if (HudApi != null && HUD.refreshNeeded)
             {
                 HUD.Refresh();
             }
@@ -161,7 +160,7 @@ namespace Keyspace.Stamina
             }
         }
 
-        private void SendUpdatesToPlayers()
+        private void SendUpdatesToAllPlayers()
         {
             foreach (IMyPlayer player in PlayerList)
             {
