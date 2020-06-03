@@ -1,4 +1,7 @@
-﻿using Sandbox.ModAPI;
+﻿// By DraygoKorvan. File from:
+// https://steamcommunity.com/sharedfiles/filedetails/?id=758597413
+
+using Sandbox.ModAPI;
 using System;
 using System.Text;
 using VRage;
