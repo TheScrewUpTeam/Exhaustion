@@ -1,12 +1,12 @@
-﻿using System;
+﻿// By THDigi. File from:
+// https://github.com/THDigi/SE-ModScript-Examples/tree/738e02fdddfbd03de4018829784b5ccb1f6cf251/Data/Scripts/Examples/Example_NetworkProtobuf
+
+using System;
 using System.Collections.Generic;
 using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.Utils;
-
-// File from:
-// https://github.com/THDigi/SE-ModScript-Examples/tree/738e02fdddfbd03de4018829784b5ccb1f6cf251/Data/Scripts/Examples/Example_NetworkProtobuf
 
 namespace Keyspace.Stamina
 {

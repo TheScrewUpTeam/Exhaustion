@@ -1,9 +1,8 @@
-﻿using ProtoBuf;
-using Sandbox.ModAPI;
-using VRage.Utils;
-
-// File from:
+﻿// By THDigi. File from:
 // https://github.com/THDigi/SE-ModScript-Examples/tree/738e02fdddfbd03de4018829784b5ccb1f6cf251/Data/Scripts/Examples/Example_NetworkProtobuf
+
+using ProtoBuf;
+using Sandbox.ModAPI;
 
 namespace Keyspace.Stamina
 {
