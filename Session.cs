@@ -155,7 +155,7 @@ namespace Keyspace.Stamina
                 }
                 else
                 {
-                    PlayerStatsDict[steamId].Update(player);
+                    PlayerStatsDict[steamId].Recalculate(player);
                 }
             }
         }
