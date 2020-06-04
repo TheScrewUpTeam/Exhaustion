@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.ModAPI;
+using VRage.Utils;
 
 namespace Keyspace.Stamina
 {
     class PlayerStats
     {
+        public static MyStringHash FatigueDamage = MyStringHash.GetOrCompute("Fatigue");
+
         public float Stamina { get; set; }
 
         public PlayerStats(float stamina)
@@ -22,7 +25,13 @@ namespace Keyspace.Stamina
         public void Recalculate(IMyPlayer player)
         {
             Stamina += MovementCosts.Map[player.Character.CurrentMovementState];
-            Stamina = Math.Max(-1.0f, Math.Min(1.0f, Stamina));
+
+            if (Stamina < 0.0f)
+            {
+                player.Character.DoDamage(Stamina * -10.0f, FatigueDamage, true);
+            }
+
+            Stamina = Math.Max(-1.0f, Math.Min(Stamina, player.Character.Integrity / 100.0f));
         }
     }
 
