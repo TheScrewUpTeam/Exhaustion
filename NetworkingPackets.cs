@@ -3,6 +3,7 @@
 
 using ProtoBuf;
 using Sandbox.ModAPI;
+//using VRage.Utils;
 
 namespace Keyspace.Stamina
 {
@@ -48,7 +49,7 @@ namespace Keyspace.Stamina
         {
             //var msg = $"StatsPacket received: Number={Number}";
             //MyLog.Default.WriteLineAndConsole(msg);
-            //MyAPIGateway.Utilities.ShowNotification(msg, Number);
+            //MyAPIGateway.Utilities.ShowNotification(msg, 3000);
 
             Stamina_Session.Instance.HUD?.Update(Number);
 

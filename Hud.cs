@@ -37,7 +37,7 @@ namespace Keyspace.Stamina
         /// </summary>
         public void Update(float num)
         {
-            stamina = Convert.ToInt32(num);
+            stamina = Convert.ToInt32(num * 100);
             refreshNeeded = true;
         }
 
