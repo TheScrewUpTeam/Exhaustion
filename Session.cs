@@ -21,8 +21,8 @@ namespace Keyspace.Stamina
         private bool isServer;
         private bool isDedicated;
 
-        int updateCounter;
-        int updatePeriod;
+        private int updateCounter;
+        public const int updatePeriod = 60; // ~1 second // TODO: configurable!
 
         internal HudAPIv2 HudApi;
         internal Hud HUD;
@@ -47,7 +47,6 @@ namespace Keyspace.Stamina
             if (isServer)
             {
                 updateCounter = 0;
-                updatePeriod = 60 * 5; // 5 seconds // TODO: configurable!
                 PlayerList = new List<IMyPlayer>();
                 PlayerStatsDict = new Dictionary<ulong, PlayerStats>();
             }
