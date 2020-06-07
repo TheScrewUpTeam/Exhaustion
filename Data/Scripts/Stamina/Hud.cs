@@ -1,7 +1,7 @@
 ﻿using Draygo.API;
+using Sandbox.ModAPI;
 using System;
 using System.Text;
-using VRage.Game;
 using VRage.Utils;
 using VRageMath;
 using BlendTypeEnum = VRageRender.MyBillboard.BlendTypeEnum;
@@ -17,7 +17,7 @@ namespace Keyspace.Stamina
         private int stamina;
 
         internal bool refreshNeeded;
-
+        
         private const string COLOR_STRING_R = "<color=red>";
         private const string COLOR_STRING_Y = "<color=yellow>";
         private const string COLOR_STRING_W = "<color=white>";
@@ -29,6 +29,7 @@ namespace Keyspace.Stamina
 
             stamina = 0;
             refreshNeeded = false;
+            
             colorString = "";
         }
 
@@ -70,11 +71,14 @@ namespace Keyspace.Stamina
             }
             if (hudStaminaIcon == null)
             {
+                // TODO: refresh on "exit from any menu", like Digi does in PaintGun (or better!)
+                var viewportSize = MyAPIGateway.Session.Camera.ViewportSize;
+                float aspectRatio = viewportSize.X / viewportSize.Y;
                 hudStaminaIcon = new HudAPIv2.BillBoardHUDMessage(
                     Material: MyStringId.GetOrCompute("StaminaIconMale"),
                     Origin: new Vector2D(-0.95, 0.935),
                     BillBoardColor: Color.White,
-                    Width: 0.025f,
+                    Width: 0.0325f / (float)aspectRatio,
                     Height: 0.0325f,
                     Blend: BlendTypeEnum.PostPP
                     );
