@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sandbox.Game.Entities;
+using System;
 using System.Collections.Generic;
 using VRage.Game;
 using VRage.Game.ModAPI;
@@ -24,13 +25,32 @@ namespace Keyspace.Stamina
 
         public void Recalculate(IMyPlayer player)
         {
-            Stamina += MovementCosts.Map[player.Character.CurrentMovementState];
+            // Character falls soon after jumping, so skip first recalc after that so
+            // the stamina change doesn't look too inconsistent from jump to jump.
+            if (player.Character.PreviousMovementState != MyCharacterMovementEnum.Jump)
+            {
+                float staminaDelta = MovementCosts.Map[player.Character.CurrentMovementState];
 
+                // MAGICNUM 1.0f: for simplicity, stamina recovery doesn't get affected by gravity.
+                float gravityInfluence = 1.0f;
+                if (staminaDelta < 0.0f)
+                {
+                    // MAGICNUM 0.1f: arbitrary non-negative to limit bonus in low-gravity (TODO: configurable!).
+                    // MAGICNUM 19.62f: G constant of 9.81f times two, don't know why it's scaled that way.
+                    gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / 19.62f);
+                }
+                
+                Stamina += staminaDelta * gravityInfluence;
+            }
+
+            // Apply negative stamina as damage, with some scaling.
             if (Stamina < 0.0f)
             {
+                // MAGICNUM -10.0f: chosen arbitrarily (TODO: configurable!).
                 player.Character.DoDamage(Stamina * -10.0f, FatigueDamage, true);
             }
 
+            // Clamp stamina between -100% (unattainable enough) and current health.
             Stamina = Math.Max(-1.0f, Math.Min(Stamina, player.Character.Integrity / 100.0f));
         }
     }
