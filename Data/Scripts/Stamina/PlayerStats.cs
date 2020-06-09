@@ -26,23 +26,32 @@ namespace Keyspace.Stamina
 
         public void Recalculate(IMyPlayer player)
         {
-            // Character falls soon after jumping; skip first recalc after that so
-            // the stamina change doesn't look too inconsistent from jump to jump.
+            float staminaDelta;
             if (player.Character.PreviousMovementState != MyCharacterMovementEnum.Jump)
             {
-                float staminaDelta = MovementCosts.Map[player.Character.CurrentMovementState];
-                
-                // MAGICNUM 1.0f: for simplicity, stamina recovery doesn't get affected by gravity.
-                float gravityInfluence = 1.0f;
-                if (staminaDelta < 0.0f)
-                {
-                    // MAGICNUM 0.1f: arbitrary non-negative to limit bonus in low-gravity (TODO: configurable!).
-                    // MAGICNUM 19.62f: G constant of 9.81f times two, don't know why it's scaled that way.
-                    gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / gravityConstant);
-                }
-                
-                Stamina += staminaDelta * gravityInfluence;
+                staminaDelta = MovementCosts.Map[player.Character.CurrentMovementState];
             }
+            else
+            {
+                // Character falls soon after jumping; dupe cost on first recalc after that
+                // so the stamina change doesn't look too inconsistent from jump to jump.
+                staminaDelta = MovementCosts.Map[MyCharacterMovementEnum.Jump];
+            }
+            
+            float gravityInfluence;
+            if (staminaDelta < 0.0f)
+            {
+                // MAGICNUM 0.1f: arbitrary non-negative to limit bonus in low-gravity (TODO: configurable!).
+                // MAGICNUM 19.62f: G constant of 9.81f times two, don't know why it's scaled that way.
+                gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / gravityConstant);
+            }
+            else
+            {
+                // MAGICNUM 1.0f: for simplicity, stamina recovery doesn't get affected by gravity.
+                gravityInfluence = 1.0f;
+            }
+
+            Stamina += staminaDelta * gravityInfluence;
 
             // Apply negative stamina as damage, with some scaling.
             if (Stamina < 0.0f)
