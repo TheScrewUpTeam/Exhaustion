@@ -51,7 +51,8 @@ namespace Keyspace.Stamina
                 PlayerList = new List<IMyPlayer>();
 
                 Config = StorageFile.Load<Config>("config.xml");
-                PlayerStatsDict = StorageFile.Load<PlayerStatsStore>("playerstats.xml").ToDict();
+                PlayerStatsStore playerStatsStore = StorageFile.Load<PlayerStatsStore>("stats.xml");
+                PlayerStatsDict = playerStatsStore.ToDict();
             }
         }
 

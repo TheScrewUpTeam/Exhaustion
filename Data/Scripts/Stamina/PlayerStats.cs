@@ -56,30 +56,33 @@ namespace Keyspace.Stamina
         }
     }
 
+    public struct StatElement
+    {
+        public ulong Id;
+        public PlayerStats Stats;
+    }
+
     /// <summary>
     /// Helper class to work around dictionaries being non-serialisable to XML.
     /// </summary>
     public class PlayerStatsStore
     {
-        public ulong[] PlayerIdArray { get; set; }
-        public PlayerStats[] PlayerStatsArray { get; set; }
+        public StatElement[] PlayerStatElements { get; set; }
 
         public PlayerStatsStore()
         {
-            PlayerIdArray = new ulong[0];
-            PlayerStatsArray = new PlayerStats[0];
+            PlayerStatElements = new StatElement[0];
         }
 
         internal PlayerStatsStore(Dictionary<ulong, PlayerStats> playerStatsDict)
         {
-            PlayerIdArray = new ulong[playerStatsDict.Count];
-            PlayerStatsArray = new PlayerStats[playerStatsDict.Count];
+            PlayerStatElements = new StatElement[playerStatsDict.Count];
 
             int i = 0;
             foreach (ulong steamId in playerStatsDict.Keys)
             {
-                PlayerIdArray[i] = steamId;
-                PlayerStatsArray[i] = playerStatsDict[steamId];
+                PlayerStatElements[i].Id = steamId;
+                PlayerStatElements[i].Stats = playerStatsDict[steamId];
                 i++;
             }
         }
@@ -88,9 +91,9 @@ namespace Keyspace.Stamina
         {
             Dictionary<ulong, PlayerStats> playerStatsDict = new Dictionary<ulong, PlayerStats>();
 
-            for (int i = 0; i < PlayerIdArray.Length; i++)
+            for (int i = 0; i < PlayerStatElements.Length; i++)
             {
-                playerStatsDict.Add(PlayerIdArray[i], PlayerStatsArray[i]);
+                playerStatsDict.Add(PlayerStatElements[i].Id, PlayerStatElements[i].Stats);
             }
 
             return playerStatsDict;
