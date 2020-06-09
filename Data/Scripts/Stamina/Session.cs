@@ -55,6 +55,11 @@ namespace Keyspace.Stamina
             }
         }
 
+        public override void SaveData()
+        {
+            StorageFile.Save("config.xml", Config);
+        }
+
         public override void BeforeStart()
         {
             Networking.Register();
@@ -100,6 +105,7 @@ namespace Keyspace.Stamina
                 else
                 {
                     updateCounter = 0;
+                    // TODO: Update player list less frequently?..
                     UpdatePlayerList();
                     UpdateAllPlayerStats();
                     SendUpdatesToAllPlayers();
@@ -126,11 +132,6 @@ namespace Keyspace.Stamina
             {
                 HUD.Refresh();
             }
-        }
-
-        public override void SaveData()
-        {
-            StorageFile.Save("config.xml", Config);
         }
 
         //public override void UpdatingStopped()

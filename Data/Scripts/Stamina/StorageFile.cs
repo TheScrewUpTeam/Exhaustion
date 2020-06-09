@@ -25,7 +25,7 @@ namespace Keyspace.Stamina
         /// <typeparam name="T">Type of the class to be loaded.</typeparam>
         /// <param name="fileName">
         /// Name of the file in per-save file storage, likely in:
-        /// %appdata%\SpaceEngineers\Saves\%steamid%\Modtest Stamina\Storage\%modid%_Stamina
+        /// %appdata%\SpaceEngineers\Saves\%steamuserid%\%savename%\Storage\%steammodid%_Stamina
         /// </param>
         /// <returns></returns>
         public static T Load<T>(string fileName) where T: new()
@@ -68,7 +68,7 @@ namespace Keyspace.Stamina
         /// <typeparam name="T">Type of the class to be saved.</typeparam>
         /// <param name="fileName">
         /// Name of the file in per-save file storage, likely in:
-        /// %appdata%\SpaceEngineers\Saves\%steamid%\Modtest Stamina\Storage\%modid%_Stamina
+        /// %appdata%\SpaceEngineers\Saves\%steamuserid%\%savename%\Storage\%steammodid%_Stamina
         /// </param>
         /// <param name="obj">Instance to be saved.</param>
         public static void Save<T>(string fileName, T obj)
