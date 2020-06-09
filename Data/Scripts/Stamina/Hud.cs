@@ -71,7 +71,7 @@ namespace Keyspace.Stamina
             }
             if (hudStaminaIcon == null)
             {
-                // TODO: refresh on "exit from any menu", like Digi does in PaintGun (or better!)
+                // TODO: Refresh on "exit from any menu", like Digi does in PaintGun (or better!).
                 var viewportSize = MyAPIGateway.Session.Camera.ViewportSize;
                 float aspectRatio = viewportSize.X / viewportSize.Y;
                 hudStaminaIcon = new HudAPIv2.BillBoardHUDMessage(

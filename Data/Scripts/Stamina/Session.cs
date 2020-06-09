@@ -87,7 +87,7 @@ namespace Keyspace.Stamina
             {
                 return;
             }
-
+            
             try
             {
                 if (updateCounter < updatePeriod)

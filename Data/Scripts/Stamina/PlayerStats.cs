@@ -1,4 +1,4 @@
-﻿using Sandbox.Game.Entities;
+﻿using Sandbox.Game;
 using System;
 using System.Collections.Generic;
 using VRage.Game;
@@ -9,7 +9,8 @@ namespace Keyspace.Stamina
 {
     class PlayerStats
     {
-        public static MyStringHash FatigueDamage = MyStringHash.GetOrCompute("Fatigue");
+        private static MyStringHash fatigueDamage = MyStringHash.GetOrCompute("Fatigue");
+        private static float gravityConstant = 9.81f * MyPerGameSettings.CharacterGravityMultiplier;
 
         public float Stamina { get; set; }
 
@@ -25,19 +26,19 @@ namespace Keyspace.Stamina
 
         public void Recalculate(IMyPlayer player)
         {
-            // Character falls soon after jumping, so skip first recalc after that so
+            // Character falls soon after jumping; skip first recalc after that so
             // the stamina change doesn't look too inconsistent from jump to jump.
             if (player.Character.PreviousMovementState != MyCharacterMovementEnum.Jump)
             {
                 float staminaDelta = MovementCosts.Map[player.Character.CurrentMovementState];
-
+                
                 // MAGICNUM 1.0f: for simplicity, stamina recovery doesn't get affected by gravity.
                 float gravityInfluence = 1.0f;
                 if (staminaDelta < 0.0f)
                 {
                     // MAGICNUM 0.1f: arbitrary non-negative to limit bonus in low-gravity (TODO: configurable!).
                     // MAGICNUM 19.62f: G constant of 9.81f times two, don't know why it's scaled that way.
-                    gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / 19.62f);
+                    gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / gravityConstant);
                 }
                 
                 Stamina += staminaDelta * gravityInfluence;
@@ -47,7 +48,7 @@ namespace Keyspace.Stamina
             if (Stamina < 0.0f)
             {
                 // MAGICNUM -10.0f: chosen arbitrarily (TODO: configurable!).
-                player.Character.DoDamage(Stamina * -10.0f, FatigueDamage, true);
+                player.Character.DoDamage(Stamina * -10.0f, fatigueDamage, true);
             }
 
             // Clamp stamina between -100% (unattainable enough) and current health.
