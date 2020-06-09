@@ -114,13 +114,13 @@ namespace Keyspace.Stamina
     static class MovementCosts
     {
         // TODO: configurable!
-        private const float GAIN_HIGH =  0.075f;
+        private const float GAIN_HIGH =  0.050f;
         private const float GAIN_MED  =  0.025f;
         private const float GAIN_LOW  =  0.005f;
         private const float COST_NONE =  0.000f;
         private const float COST_LOW  = -0.005f;
         private const float COST_MED  = -0.025f;
-        private const float COST_HIGH = -0.075f;
+        private const float COST_HIGH = -0.050f;
 
         // helpers
         private const float WALK      = GAIN_LOW;
