@@ -56,6 +56,8 @@ namespace Keyspace.Stamina
         }
     }
 
+    // TODO: Push this and PlayerStatsStore to StorageFile.cs: detect if type passed to
+    // Save()/Load() there is a dictionary, convert on the fly.
     public struct StatElement
     {
         public ulong Id;
