@@ -15,8 +15,8 @@ namespace Keyspace.Stamina
     {
         public static Stamina_Session Instance;
 
-        public Networking Networking = new Networking(31337);
-        public StorageFile Config = new StorageFile();
+        internal Networking Networking = new Networking(31337);
+        internal Config Config = new Config();
 
         private bool isCreativeGame;
         private bool isServer;
@@ -51,8 +51,7 @@ namespace Keyspace.Stamina
                 PlayerList = new List<IMyPlayer>();
                 PlayerStatsDict = new Dictionary<ulong, PlayerStats>();
 
-                // FIXME: Ugly! Plus, initialising twice: on class instantiation and on load.
-                Config = StorageFile.LoadFromFile("config.xml");
+                Config = StorageFile.Load<Config>("config.xml");
             }
         }
 
@@ -131,7 +130,7 @@ namespace Keyspace.Stamina
 
         public override void SaveData()
         {
-            Config.SaveToFile("config.xml");
+            StorageFile.Save("config.xml", Config);
         }
 
         //public override void UpdatingStopped()

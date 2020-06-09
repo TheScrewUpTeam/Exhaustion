@@ -4,60 +4,83 @@ using VRage.Utils;
 
 namespace Keyspace.Stamina
 {
-    public class StorageFile
+    public class Config
     {
         public int Test { get; set; }
 
-        public StorageFile()
+        public Config()
         {
             Test = 0;
         }
+    }
 
-        public static StorageFile LoadFromFile(string fileName)
+    /// <summary>
+    /// Helper class to load/save other simple class instances from/to XML files.
+    /// </summary>
+    public static class StorageFile
+    {
+        /// <summary>
+        /// Loads a class instance that has a constructor from an XML file.
+        /// </summary>
+        /// <typeparam name="T">Type of the class to be loaded.</typeparam>
+        /// <param name="fileName">
+        /// Name of the file in per-save file storage, likely in:
+        /// %appdata%\SpaceEngineers\Saves\%steamid%\Modtest Stamina\Storage\%modid%_Stamina
+        /// </param>
+        /// <returns></returns>
+        public static T Load<T>(string fileName) where T: new()
         {
-            if (MyAPIGateway.Utilities.FileExistsInWorldStorage(fileName, typeof(StorageFile)))
+            T obj = new T();
+
+            if (MyAPIGateway.Utilities.FileExistsInWorldStorage(fileName, typeof(T)))
             {
                 try
                 {
-                    StorageFile config = null;
-
                     string contents;
-                    using (var reader = MyAPIGateway.Utilities.ReadFileInWorldStorage(fileName, typeof(StorageFile)))
+                    using (var reader = MyAPIGateway.Utilities.ReadFileInWorldStorage(fileName, typeof(T)))
                     {
                         contents = reader.ReadToEnd();
                     }
                     
-                    config = MyAPIGateway.Utilities.SerializeFromXML<StorageFile>(contents);
-                    config.Test++; // DEBUG: hello world
+                    obj = MyAPIGateway.Utilities.SerializeFromXML<T>(contents);
 
                     MyLog.Default.WriteLineAndConsole($"Loaded {fileName}.");
 
-                    return config;
+                    return obj;
                 }
                 catch (Exception e)
                 {
-                    MyLog.Default.WriteLineAndConsole($"ERROR: Could not load {fileName}. Will use defaults. Exception:");
+                    MyLog.Default.WriteLineAndConsole($"ERROR: Could not load {fileName}. Defaults will be used. Exception:");
                     MyLog.Default.WriteLineAndConsole(e.ToString());
                 }
             }
             else
             {
-                MyLog.Default.WriteLineAndConsole($"{fileName} not found. Will use defaults.");
+                MyLog.Default.WriteLineAndConsole($"{fileName} not found. Defaults will be used.");
             }
 
-            return new StorageFile();
+            return obj;
         }
 
-        public void SaveToFile(string fileName)
+        /// <summary>
+        /// Save a class instance to an XML file.
+        /// </summary>
+        /// <typeparam name="T">Type of the class to be saved.</typeparam>
+        /// <param name="fileName">
+        /// Name of the file in per-save file storage, likely in:
+        /// %appdata%\SpaceEngineers\Saves\%steamid%\Modtest Stamina\Storage\%modid%_Stamina
+        /// </param>
+        /// <param name="obj">Instance to be saved.</param>
+        public static void Save<T>(string fileName, T obj)
         {
             try
             {
-                using (var writer = MyAPIGateway.Utilities.WriteFileInWorldStorage(fileName, typeof(StorageFile)))
+                using (var writer = MyAPIGateway.Utilities.WriteFileInWorldStorage(fileName, typeof(T)))
                 {
-                    writer.Write(MyAPIGateway.Utilities.SerializeToXML(this));
+                    writer.Write(MyAPIGateway.Utilities.SerializeToXML(obj));
                 }
 
-                MyLog.Default.WriteLineAndConsole($"Config saved to {fileName}. Setting test: {Test}.");
+                MyLog.Default.WriteLineAndConsole($"Saved {fileName}.");
             }
             catch (Exception e)
             {
