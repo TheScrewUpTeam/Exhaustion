@@ -41,7 +41,7 @@ namespace Keyspace.Stamina
                     {
                         contents = reader.ReadToEnd();
                     }
-                    
+
                     obj = MyAPIGateway.Utilities.SerializeFromXML<T>(contents);
 
                     MyLog.Default.WriteLineAndConsole($"Loaded {fileName}.");

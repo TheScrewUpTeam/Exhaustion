@@ -16,7 +16,7 @@ namespace Keyspace.Stamina
         public static Stamina_Session Instance;
 
         internal Networking Networking = new Networking(31337);
-        internal Config Config = new Config();
+        internal Config Config;
 
         private bool isCreativeGame;
         private bool isServer;
@@ -29,7 +29,7 @@ namespace Keyspace.Stamina
         internal Hud HUD;
 
         private List<IMyPlayer> PlayerList;
-        Dictionary<ulong, PlayerStats> PlayerStatsDict;
+        private Dictionary<ulong, PlayerStats> PlayerStatsDict;
 
         public override void LoadData()
         {
@@ -49,15 +49,16 @@ namespace Keyspace.Stamina
             {
                 updateCounter = 0;
                 PlayerList = new List<IMyPlayer>();
-                PlayerStatsDict = new Dictionary<ulong, PlayerStats>();
 
                 Config = StorageFile.Load<Config>("config.xml");
+                PlayerStatsDict = StorageFile.Load<PlayerStatsStore>("playerstats.xml").ToDict();
             }
         }
 
         public override void SaveData()
         {
             StorageFile.Save("config.xml", Config);
+            StorageFile.Save("stats.xml", new PlayerStatsStore(PlayerStatsDict));
         }
 
         public override void BeforeStart()

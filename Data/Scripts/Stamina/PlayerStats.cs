@@ -7,7 +7,7 @@ using VRage.Utils;
 
 namespace Keyspace.Stamina
 {
-    class PlayerStats
+    public class PlayerStats
     {
         private static MyStringHash fatigueDamage = MyStringHash.GetOrCompute("Fatigue");
         private static float gravityConstant = 9.81f * MyPerGameSettings.CharacterGravityMultiplier;
@@ -53,6 +53,47 @@ namespace Keyspace.Stamina
 
             // Clamp stamina between -100% (unattainable enough) and current health.
             Stamina = Math.Max(-1.0f, Math.Min(Stamina, player.Character.Integrity / 100.0f));
+        }
+    }
+
+    /// <summary>
+    /// Helper class to work around dictionaries being non-serialisable to XML.
+    /// </summary>
+    public class PlayerStatsStore
+    {
+        public ulong[] PlayerIdArray { get; set; }
+        public PlayerStats[] PlayerStatsArray { get; set; }
+
+        public PlayerStatsStore()
+        {
+            PlayerIdArray = new ulong[0];
+            PlayerStatsArray = new PlayerStats[0];
+        }
+
+        internal PlayerStatsStore(Dictionary<ulong, PlayerStats> playerStatsDict)
+        {
+            PlayerIdArray = new ulong[playerStatsDict.Count];
+            PlayerStatsArray = new PlayerStats[playerStatsDict.Count];
+
+            int i = 0;
+            foreach (ulong steamId in playerStatsDict.Keys)
+            {
+                PlayerIdArray[i] = steamId;
+                PlayerStatsArray[i] = playerStatsDict[steamId];
+                i++;
+            }
+        }
+
+        internal Dictionary<ulong, PlayerStats> ToDict()
+        {
+            Dictionary<ulong, PlayerStats> playerStatsDict = new Dictionary<ulong, PlayerStats>();
+
+            for (int i = 0; i < PlayerIdArray.Length; i++)
+            {
+                playerStatsDict.Add(PlayerIdArray[i], PlayerStatsArray[i]);
+            }
+
+            return playerStatsDict;
         }
     }
 
