@@ -1,4 +1,5 @@
 ﻿using Sandbox.Game;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using VRage.Game;
@@ -26,6 +27,9 @@ namespace Keyspace.Stamina
 
         public void Recalculate(IMyPlayer player)
         {
+            // FIXME: Standing on rotating parts (subgrids?) results in always being in "Jump"
+            // state (or something else high-cost). This depletes stamina rapidly. This could
+            // be explained away by "balancing being hard", but that's cheap and unexpected.
             float staminaDelta;
             if (player.Character.PreviousMovementState != MyCharacterMovementEnum.Jump)
             {
@@ -37,7 +41,12 @@ namespace Keyspace.Stamina
                 // so the stamina change doesn't look too inconsistent from jump to jump.
                 staminaDelta = MovementCosts.Map[MyCharacterMovementEnum.Jump];
             }
-            
+
+            // DEBUG
+            var msg = $"{player.Character.CurrentMovementState} {player.Character.PreviousMovementState}";
+            MyLog.Default.WriteLineAndConsole(msg);
+            MyAPIGateway.Utilities.ShowNotification(msg, 5000);
+
             float gravityInfluence;
             if (staminaDelta < 0.0f)
             {

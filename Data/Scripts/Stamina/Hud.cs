@@ -56,11 +56,14 @@ namespace Keyspace.Stamina
         /// </summary>
         public void Refresh()
         {
+            // quality quarantined
             if (!HudApi.Heartbeat)
             {
                 return;
             }
 
+            // Check if HUD elements have been initialised. If not, do.
+            // TODO: Init once, don't check.
             if (hudStaminaMessage == null)
             {
                 hudStaminaMessage = new HudAPIv2.HUDMessage(
