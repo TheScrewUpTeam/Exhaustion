@@ -1,5 +1,5 @@
 ﻿using Sandbox.Game;
-using Sandbox.ModAPI;
+//using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using VRage.Game;
@@ -12,6 +12,8 @@ namespace Keyspace.Stamina
     {
         private static MyStringHash fatigueDamage = MyStringHash.GetOrCompute("Fatigue");
         private static float gravityConstant = 9.81f * MyPerGameSettings.CharacterGravityMultiplier;
+
+        private MyCharacterMovementEnum prevMovementState = MyCharacterMovementEnum.Standing;
 
         public float Stamina { get; set; }
 
@@ -27,13 +29,12 @@ namespace Keyspace.Stamina
 
         public void Recalculate(IMyPlayer player)
         {
-            // FIXME: Standing on rotating parts (subgrids?) results in always being in "Jump"
-            // state (or something else high-cost). This depletes stamina rapidly. This could
-            // be explained away by "balancing being hard", but that's cheap and unexpected.
+            MyCharacterMovementEnum currMovementState = player.Character.CurrentMovementState;
+
             float staminaDelta;
-            if (player.Character.PreviousMovementState != MyCharacterMovementEnum.Jump)
+            if (prevMovementState != MyCharacterMovementEnum.Jump)
             {
-                staminaDelta = MovementCosts.Map[player.Character.CurrentMovementState];
+                staminaDelta = MovementCosts.Map[currMovementState];
             }
             else
             {
@@ -43,9 +44,9 @@ namespace Keyspace.Stamina
             }
 
             // DEBUG
-            var msg = $"{player.Character.CurrentMovementState} {player.Character.PreviousMovementState}";
-            MyLog.Default.WriteLineAndConsole(msg);
-            MyAPIGateway.Utilities.ShowNotification(msg, 5000);
+            //var msg = $"{currMovementState} {prevMovementState} {player.Character.Integrity}";
+            //MyLog.Default.WriteLineAndConsole(msg);
+            //MyAPIGateway.Utilities.ShowNotification(msg, 1000);
 
             float gravityInfluence;
             if (staminaDelta < 0.0f)
@@ -71,6 +72,9 @@ namespace Keyspace.Stamina
 
             // Clamp stamina between -100% (unattainable enough) and current health.
             Stamina = Math.Max(-1.0f, Math.Min(Stamina, player.Character.Integrity / 100.0f));
+
+            // Update for next time.
+            prevMovementState = currMovementState;
         }
     }
 
@@ -123,13 +127,13 @@ namespace Keyspace.Stamina
     static class MovementCosts
     {
         // TODO: configurable!
-        private const float GAIN_HIGH =  0.050f;
-        private const float GAIN_MED  =  0.025f;
-        private const float GAIN_LOW  =  0.005f;
-        private const float COST_NONE =  0.000f;
-        private const float COST_LOW  = -0.005f;
-        private const float COST_MED  = -0.025f;
-        private const float COST_HIGH = -0.050f;
+        private const float GAIN_HIGH =  0.0050f;
+        private const float GAIN_MED  =  0.0025f;
+        private const float GAIN_LOW  =  0.0005f;
+        private const float COST_NONE =  0.0000f;
+        private const float COST_LOW  = -0.0005f;
+        private const float COST_MED  = -0.0025f;
+        private const float COST_HIGH = -0.0050f;
 
         // helpers
         private const float WALK      = GAIN_LOW;

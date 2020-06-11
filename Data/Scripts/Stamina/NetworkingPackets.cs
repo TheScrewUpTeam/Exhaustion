@@ -47,6 +47,7 @@ namespace Keyspace.Stamina
 
         public override bool Received()
         {
+            // DEBUG
             //var msg = $"StatsPacket received: Number={Number}";
             //MyLog.Default.WriteLineAndConsole(msg);
             //MyAPIGateway.Utilities.ShowNotification(msg, 3000);

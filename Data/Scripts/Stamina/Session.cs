@@ -23,7 +23,7 @@ namespace Keyspace.Stamina
         private bool isDedicated;
 
         private int updateCounter;
-        public const int updatePeriod = 60; // ~1 second // TODO: configurable!
+        public const int updatePeriod = 6; // ~100 ms ( // TODO: configurable!
 
         internal HudAPIv2 HudApi;
         internal Hud HUD;
