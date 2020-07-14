@@ -77,52 +77,6 @@ namespace Keyspace.Stamina
         }
     }
 
-    // TODO: Push this and PlayerStatsStore to StorageFile.cs: detect if type passed to
-    // Save()/Load() there is a dictionary, convert on the fly.
-    public struct StatElement
-    {
-        public ulong Id;
-        public PlayerStats Stats;
-    }
-
-    /// <summary>
-    /// Helper class to work around dictionaries being non-serialisable to XML.
-    /// </summary>
-    public class PlayerStatsStorage
-    {
-        public StatElement[] PlayerStatElements { get; set; }
-
-        public PlayerStatsStorage()
-        {
-            PlayerStatElements = new StatElement[0];
-        }
-
-        internal PlayerStatsStorage(Dictionary<ulong, PlayerStats> playerStatsDict)
-        {
-            PlayerStatElements = new StatElement[playerStatsDict.Count];
-
-            int i = 0;
-            foreach (ulong steamId in playerStatsDict.Keys)
-            {
-                PlayerStatElements[i].Id = steamId;
-                PlayerStatElements[i].Stats = playerStatsDict[steamId];
-                i++;
-            }
-        }
-
-        internal Dictionary<ulong, PlayerStats> ToDict()
-        {
-            Dictionary<ulong, PlayerStats> playerStatsDict = new Dictionary<ulong, PlayerStats>();
-
-            for (int i = 0; i < PlayerStatElements.Length; i++)
-            {
-                playerStatsDict.Add(PlayerStatElements[i].Id, PlayerStatElements[i].Stats);
-            }
-
-            return playerStatsDict;
-        }
-    }
-
     static class MovementCosts
     {
         // TODO: configurable!

@@ -1,5 +1,6 @@
 ﻿using Sandbox.ModAPI;
 using System;
+using System.Collections.Generic;
 using VRage.Utils;
 
 namespace Keyspace.Stamina
@@ -25,6 +26,55 @@ namespace Keyspace.Stamina
             CostHigh   = -0.0050f;
         }
     }
+
+    /// <summary>
+    /// Helper, used by PlayerStatsStorage below to represent a single array element.
+    /// </summary>
+    public struct StatElement
+    {
+        public ulong Id;
+        public PlayerStats Stats;
+    }
+
+    /// <summary>
+    /// Helper class to work around dictionaries being non-serialisable to XML.
+    /// </summary>
+    public class PlayerStatsStorage
+    {
+        public StatElement[] PlayerStatElements { get; set; }
+
+        public PlayerStatsStorage()
+        {
+            PlayerStatElements = new StatElement[0];
+        }
+
+        internal PlayerStatsStorage(Dictionary<ulong, PlayerStats> playerStatsDict)
+        {
+            PlayerStatElements = new StatElement[playerStatsDict.Count];
+
+            int i = 0;
+            foreach (ulong steamId in playerStatsDict.Keys)
+            {
+                PlayerStatElements[i].Id = steamId;
+                PlayerStatElements[i].Stats = playerStatsDict[steamId];
+                i++;
+            }
+        }
+
+        internal Dictionary<ulong, PlayerStats> ToDict()
+        {
+            Dictionary<ulong, PlayerStats> playerStatsDict = new Dictionary<ulong, PlayerStats>();
+
+            for (int i = 0; i < PlayerStatElements.Length; i++)
+            {
+                playerStatsDict.Add(PlayerStatElements[i].Id, PlayerStatElements[i].Stats);
+            }
+
+            return playerStatsDict;
+        }
+    }
+
+    // TODO: detect if type passed to Save()/Load() of StorageFile is a dictionary, convert on the fly.
 
     /// <summary>
     /// Helper class to load/save other simple class instances from/to XML files.
