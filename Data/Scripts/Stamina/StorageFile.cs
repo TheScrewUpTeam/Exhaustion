@@ -6,11 +6,23 @@ namespace Keyspace.Stamina
 {
     public class Config
     {
-        public int Test { get; set; }
+        public float GainHigh { get; set; }
+        public float GainMedium { get; set; }
+        public float GainLow { get; set; }
+        public float CostNone { get; set; }
+        public float CostLow { get; set; }
+        public float CostMedium { get; set; }
+        public float CostHigh { get; set; }
 
         public Config()
         {
-            Test = 0;
+            GainHigh   =  0.0050f;
+            GainMedium =  0.0025f;
+            GainLow    =  0.0005f;
+            CostNone   =  0.0000f;
+            CostLow    = -0.0005f;
+            CostMedium = -0.0025f;
+            CostHigh   = -0.0050f;
         }
     }
 
