@@ -52,6 +52,8 @@ namespace Keyspace.Stamina
 
                 Config = StorageFile.Load<Config>("config.xml");
                 PlayerStatsDict = StorageFile.Load<PlayerStatsStorage>("stats.xml").ToDict();
+
+                MovementCosts.SetFromConfig(Config);
             }
         }
 

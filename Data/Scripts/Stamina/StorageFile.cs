@@ -5,6 +5,9 @@ using VRage.Utils;
 
 namespace Keyspace.Stamina
 {
+    /// <summary>
+    /// Represents the server-provided configuration, loadable from a file.
+    /// </summary>
     public class Config
     {
         public float GainHigh { get; set; }
@@ -17,6 +20,7 @@ namespace Keyspace.Stamina
 
         public Config()
         {
+            // Defaults; these properties will remain as below if the config couldn't be loaded.
             GainHigh   =  0.0050f;
             GainMedium =  0.0025f;
             GainLow    =  0.0005f;
@@ -37,7 +41,10 @@ namespace Keyspace.Stamina
     }
 
     /// <summary>
-    /// Helper class to work around dictionaries being non-serialisable to XML.
+    /// Represents how much of the tracked stats each player has.
+    /// 
+    /// Helper class to work around dictionaries being non-serialisable to XML. The
+    /// dictionary is converted to an array, so that can be serialised instead.
     /// </summary>
     public class PlayerStatsStorage
     {
@@ -74,7 +81,9 @@ namespace Keyspace.Stamina
         }
     }
 
-    // TODO: detect if type passed to Save()/Load() of StorageFile is a dictionary, convert on the fly.
+    // TODO: Detect if type passed to Save()/Load() of StorageFile is a dictionary
+    // and convert to array on the fly, instead of expecting that a dictionary will
+    // never be passed.
 
     /// <summary>
     /// Helper class to load/save other simple class instances from/to XML files.
