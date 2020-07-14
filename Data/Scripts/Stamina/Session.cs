@@ -15,7 +15,7 @@ namespace Keyspace.Stamina
     {
         public static Stamina_Session Instance;
 
-        internal Networking Networking = new Networking(31337);
+        internal Networking Networking = new Networking(31337);  // FIXME: Change ID once first published to Workshop.
         internal Config Config;
 
         private bool isCreativeGame;
@@ -51,14 +51,14 @@ namespace Keyspace.Stamina
                 PlayerList = new List<IMyPlayer>();
 
                 Config = StorageFile.Load<Config>("config.xml");
-                PlayerStatsDict = StorageFile.Load<PlayerStatsStore>("stats.xml").ToDict();
+                PlayerStatsDict = StorageFile.Load<PlayerStatsStorage>("stats.xml").ToDict();
             }
         }
 
         public override void SaveData()
         {
             StorageFile.Save("config.xml", Config);
-            StorageFile.Save("stats.xml", new PlayerStatsStore(PlayerStatsDict));
+            StorageFile.Save("stats.xml", new PlayerStatsStorage(PlayerStatsDict));
         }
 
         public override void BeforeStart()

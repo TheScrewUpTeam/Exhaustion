@@ -52,7 +52,6 @@ namespace Keyspace.Stamina
             if (staminaDelta < 0.0f)
             {
                 // MAGICNUM 0.1f: arbitrary non-negative to limit bonus in low-gravity (TODO: configurable!).
-                // MAGICNUM 19.62f: G constant of 9.81f times two, don't know why it's scaled that way.
                 gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / gravityConstant);
             }
             else
@@ -89,16 +88,16 @@ namespace Keyspace.Stamina
     /// <summary>
     /// Helper class to work around dictionaries being non-serialisable to XML.
     /// </summary>
-    public class PlayerStatsStore
+    public class PlayerStatsStorage
     {
         public StatElement[] PlayerStatElements { get; set; }
 
-        public PlayerStatsStore()
+        public PlayerStatsStorage()
         {
             PlayerStatElements = new StatElement[0];
         }
 
-        internal PlayerStatsStore(Dictionary<ulong, PlayerStats> playerStatsDict)
+        internal PlayerStatsStorage(Dictionary<ulong, PlayerStats> playerStatsDict)
         {
             PlayerStatElements = new StatElement[playerStatsDict.Count];
 
