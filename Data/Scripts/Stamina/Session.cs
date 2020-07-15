@@ -15,7 +15,7 @@ namespace Keyspace.Stamina
     {
         public static Stamina_Session Instance;
 
-        internal Networking Networking = new Networking(31337);  // FIXME: Change ID once first published to Workshop.
+        internal Networking Networking = new Networking(47275);  // FIXME: Change ID once first published to Workshop.
         internal Config Config;
 
         private bool isCreativeGame;
