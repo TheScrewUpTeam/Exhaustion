@@ -78,8 +78,8 @@ namespace Keyspace.Stamina
             // Apply negative stamina as damage, with some scaling.
             if (Stamina < 0.0f)
             {
-                // MAGICNUM -10.0f: chosen arbitrarily (TODO: configurable!).
-                player.Character.DoDamage(Stamina * -10.0f, fatigueDamage, true);
+                // MAGICNUM 5.0f: chosen arbitrarily (TODO: configurable!).
+                player.Character.DoDamage(-Stamina * 5.0f, fatigueDamage, true);
             }
 
             // Clamp stamina between -100% (unattainable enough) and current health.

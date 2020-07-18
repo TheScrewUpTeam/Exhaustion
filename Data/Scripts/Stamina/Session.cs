@@ -15,7 +15,8 @@ namespace Keyspace.Stamina
     {
         public static Stamina_Session Instance;
 
-        internal Networking Networking = new Networking(47275);  // FIXME: Change ID once first published to Workshop.
+        // MAGICNUM 47275: last 5 digits of Workshop-published mod ID.
+        internal Networking Networking = new Networking(47275);
         internal Config Config;
 
         private bool isCreativeGame;
@@ -23,7 +24,7 @@ namespace Keyspace.Stamina
         private bool isDedicated;
 
         private int updateCounter;
-        public const int updatePeriod = 6; // ~100 ms ( // TODO: configurable!
+        public const int updatePeriod = 6; // ~100 ms  // TODO: configurable!
 
         internal HudAPIv2 HudApi;
         internal Hud HUD;
