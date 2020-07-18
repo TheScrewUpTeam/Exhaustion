@@ -10,6 +10,7 @@ namespace Keyspace.Stamina
     /// </summary>
     public class Config
     {
+        // Configurables - must be properties for easy save/load to/from XML.
         public float GainHigh { get; set; }
         public float GainMedium { get; set; }
         public float GainLow { get; set; }

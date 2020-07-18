@@ -8,6 +8,9 @@ using VRage.Utils;
 
 namespace Keyspace.Stamina
 {
+    /// <summary>
+    /// Stats of a player character.
+    /// </summary>
     public class PlayerStats
     {
         private static MyStringHash fatigueDamage = MyStringHash.GetOrCompute("Fatigue");
@@ -15,6 +18,7 @@ namespace Keyspace.Stamina
 
         private MyCharacterMovementEnum prevMovementState = MyCharacterMovementEnum.Standing;
         
+        // Tracked stats - must be properties for easy save/load to/from XML.
         public float Stamina { get; set; }
 
         public PlayerStats(float stamina)
@@ -30,6 +34,15 @@ namespace Keyspace.Stamina
         public void Recalculate(IMyPlayer player)
         {
             MyCharacterMovementEnum currMovementState = player.Character.CurrentMovementState;
+
+            // If character died, then reset stats and skip further calculations, so
+            // they're not potentially negative on re-spawn.
+            if (currMovementState == MyCharacterMovementEnum.Died)
+            {
+                Stamina = 0.5f;  // TODO: configurable!
+                prevMovementState = MyCharacterMovementEnum.Died;
+                return;
+            }
 
             float staminaDelta;
             if (prevMovementState != MyCharacterMovementEnum.Jump)
@@ -77,6 +90,9 @@ namespace Keyspace.Stamina
         }
     }
 
+    /// <summary>
+    /// Helper class to map a movement state to its cost.
+    /// </summary>
     public static class MovementCosts
     {
         private static float gainHigh;

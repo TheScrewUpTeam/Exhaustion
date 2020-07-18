@@ -59,8 +59,11 @@ namespace Keyspace.Stamina
 
         public override void SaveData()
         {
-            StorageFile.Save("config.xml", Config);
-            StorageFile.Save("stats.xml", new PlayerStatsStorage(PlayerStatsDict));
+            if (isServer)
+            {
+                StorageFile.Save("config.xml", Config);
+                StorageFile.Save("stats.xml", new PlayerStatsStorage(PlayerStatsDict));
+            }
         }
 
         public override void BeforeStart()
