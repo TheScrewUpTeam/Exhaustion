@@ -15,7 +15,7 @@ namespace Keyspace.Stamina
         private HudAPIv2.BillBoardHUDMessage hudStaminaIcon;
         private HudAPIv2.BillBoardHUDMessage hudStaminaLowOverlay;
 
-        private int stamina;
+        private float stamina;
 
         internal bool refreshNeeded;
         
@@ -48,7 +48,7 @@ namespace Keyspace.Stamina
         /// </summary>
         public void Update(float num)
         {
-            stamina = Convert.ToInt32(num * 100.0f);
+            stamina = num * 100.0f;
             refreshNeeded = true;
         }
 
@@ -101,11 +101,11 @@ namespace Keyspace.Stamina
 
             hudStaminaReadout.Message.Clear();
             
-            if (stamina > 75)
+            if (stamina > 75.0f)
             {
                 colorString = COLOR_STRING_W;
             }
-            else if (stamina < 25)
+            else if (stamina < 25.0f)
             {
                 colorString = COLOR_STRING_R;
                 float alpha = -stamina / 25.0f + 1.0f;
@@ -122,7 +122,7 @@ namespace Keyspace.Stamina
                 hudStaminaLowOverlay.BillBoardColor = new Color(new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
             }
 
-            hudStaminaReadout.Message.AppendFormat($"{colorString}{stamina}");
+            hudStaminaReadout.Message.AppendFormat($"{colorString}{Convert.ToInt32(stamina)}");
 
             refreshNeeded = false;
         }
