@@ -18,7 +18,9 @@ namespace Keyspace.Stamina
         private float stamina;
 
         internal bool refreshNeeded;
-        
+
+        private Color noColor;
+
         private const string COLOR_STRING_R = "<color=red>";
         private const string COLOR_STRING_Y = "<color=yellow>";
         private const string COLOR_STRING_W = "<color=white>";
@@ -30,7 +32,9 @@ namespace Keyspace.Stamina
 
             stamina = 0;
             refreshNeeded = false;
-            
+
+            noColor = new Color(new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+
             colorString = "";
         }
 
@@ -92,31 +96,32 @@ namespace Keyspace.Stamina
                 hudStaminaLowOverlay = new HudAPIv2.BillBoardHUDMessage(
                     Material: MyStringId.GetOrCompute("StaminaLowOverlay"),
                     Origin: new Vector2D(0.0d, 0.0d),
-                    BillBoardColor: new Color(new Vector4(0.0f, 0.0f, 0.0f, 0.5f)),
+                    BillBoardColor: noColor,
                     Width: 2.0f,
                     Height: 2.0f,
                     Blend: BlendTypeEnum.LDR
                     );
             }
 
-            hudStaminaReadout.Message.Clear();
-            
-            if (stamina > 75.0f)
+            if (stamina < 25.0f)
             {
-                colorString = COLOR_STRING_W;
-            }
-            else if (stamina < 25.0f)
-            {
-                colorString = COLOR_STRING_R;
                 float alpha = -stamina / 25.0f + 1.0f;
                 alpha = Math.Min(1.0f, Math.Max(0.0f, alpha));
                 hudStaminaLowOverlay.BillBoardColor = new Color(new Vector4(1.0f, 1.0f, 1.0f, alpha));
             }
             else
             {
-                colorString = COLOR_STRING_Y;
-                hudStaminaLowOverlay.BillBoardColor = new Color(new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+                hudStaminaLowOverlay.BillBoardColor = noColor;
             }
+
+            hudStaminaReadout.Message.Clear();
+            
+            if (stamina > 75.0f)
+                colorString = COLOR_STRING_W;
+            else if (stamina < 25.0f)
+                colorString = COLOR_STRING_R;
+            else
+                colorString = COLOR_STRING_Y;
 
             hudStaminaReadout.Message.AppendFormat($"{colorString}{Convert.ToInt32(stamina)}");
 
