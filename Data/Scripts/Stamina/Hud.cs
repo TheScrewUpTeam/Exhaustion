@@ -52,7 +52,7 @@ namespace Keyspace.Stamina
         /// </summary>
         public void Update(float num)
         {
-            stamina = num * 100.0f;
+            stamina = num;
             refreshNeeded = true;
         }
 
@@ -99,14 +99,18 @@ namespace Keyspace.Stamina
                     BillBoardColor: noColor,
                     Width: 2.0f,
                     Height: 2.0f,
-                    Blend: BlendTypeEnum.LDR
+                    Blend: BlendTypeEnum.Standard
                     );
             }
 
-            if (stamina < 25.0f)
+            if (stamina < 0.25f)
             {
-                float alpha = -stamina / 25.0f + 1.0f;
-                alpha = Math.Min(1.0f, Math.Max(0.0f, alpha));
+                // Sigmoid - so it reaches near-full saturation earlier than stamina gets to zero.
+                // See WolframAlpha: 2 - 2/(1+e^(-50x + 6.25)) from -0.25 to 0.25
+                // https://www.wolframalpha.com/input/?i=2+-+2%2F%281%2Be%5E%28-50x+%2B+6.25%29%29+from+-0.25+to+0.25
+                float alpha = 1.0f - 1.0f / (1.0f + (float)Math.Exp(-50.0f * stamina + 6.25f));
+                // Clamp to below 1 so it's never fully opaque.
+                alpha = Math.Min(0.95f, Math.Max(0.0f, alpha));
                 hudStaminaLowOverlay.BillBoardColor = new Color(new Vector4(1.0f, 1.0f, 1.0f, alpha));
             }
             else
@@ -116,14 +120,14 @@ namespace Keyspace.Stamina
 
             hudStaminaReadout.Message.Clear();
             
-            if (stamina > 75.0f)
+            if (stamina > 0.75f)
                 colorString = COLOR_STRING_W;
-            else if (stamina < 25.0f)
+            else if (stamina < 0.25f)
                 colorString = COLOR_STRING_R;
             else
                 colorString = COLOR_STRING_Y;
 
-            hudStaminaReadout.Message.AppendFormat($"{colorString}{Convert.ToInt32(stamina)}");
+            hudStaminaReadout.Message.AppendFormat($"{colorString}{Convert.ToInt32(stamina * 100.0f)}");
 
             refreshNeeded = false;
         }

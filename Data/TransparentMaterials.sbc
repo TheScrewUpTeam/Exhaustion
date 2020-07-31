@@ -27,7 +27,7 @@
           <TypeId>TransparentMaterialDefinition</TypeId>
           <SubtypeId>StaminaLowOverlay</SubtypeId>
         </Id>
-        <AlphaMistingEnable>true</AlphaMistingEnable>
+        <AlphaMistingEnable>false</AlphaMistingEnable>
         <AlphaSaturation>1</AlphaSaturation>
         <CanBeAffectedByOtherLights>false</CanBeAffectedByOtherLights>
         <IgnoreDepth>true</IgnoreDepth>
