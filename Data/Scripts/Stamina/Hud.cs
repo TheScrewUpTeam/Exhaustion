@@ -11,7 +11,7 @@ namespace Keyspace.Stamina
     class Hud
     {
         private HudAPIv2 HudApi;
-        private HudAPIv2.HUDMessage hudStaminaMessage;
+        private HudAPIv2.HUDMessage hudStaminaReadout;
         private HudAPIv2.BillBoardHUDMessage hudStaminaIcon;
 
         private int stamina;
@@ -64,9 +64,9 @@ namespace Keyspace.Stamina
 
             // Check if HUD elements have been initialised. If not, do.
             // TODO: Init once, don't check.
-            if (hudStaminaMessage == null)
+            if (hudStaminaReadout == null)
             {
-                hudStaminaMessage = new HudAPIv2.HUDMessage(
+                hudStaminaReadout = new HudAPIv2.HUDMessage(
                     Message: new StringBuilder(COLOR_STRING_Y.Length + "100".Length),
                     Origin: new Vector2D(-0.925, 0.95),
                     Blend: BlendTypeEnum.PostPP
@@ -87,7 +87,7 @@ namespace Keyspace.Stamina
                     );
             }
 
-            hudStaminaMessage.Message.Clear();
+            hudStaminaReadout.Message.Clear();
             
             if (stamina > 75)
                 colorString = COLOR_STRING_W;
@@ -96,7 +96,7 @@ namespace Keyspace.Stamina
             else
                 colorString = COLOR_STRING_Y;
 
-            hudStaminaMessage.Message.AppendFormat($"{colorString}{stamina}");
+            hudStaminaReadout.Message.AppendFormat($"{colorString}{stamina}");
 
             refreshNeeded = false;
         }
