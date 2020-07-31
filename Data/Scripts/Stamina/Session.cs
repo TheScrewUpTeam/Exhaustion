@@ -157,6 +157,13 @@ namespace Keyspace.Stamina
         {
             foreach (IMyPlayer player in PlayerList)
             {
+                // Monsters get the same Steam ID as the host/server, and don't have the
+                // logic to deal with stats anyway, so skip them.
+                if (player.IsBot)
+                {
+                    continue;
+                }
+
                 ulong steamId = player.SteamUserId;
 
                 if (!PlayerStatsDict.ContainsKey(steamId))

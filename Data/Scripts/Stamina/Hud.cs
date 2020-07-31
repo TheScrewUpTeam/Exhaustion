@@ -111,10 +111,6 @@ namespace Keyspace.Stamina
                 float alpha = -stamina / 25.0f + 1.0f;
                 alpha = Math.Min(1.0f, Math.Max(0.0f, alpha));
                 hudStaminaLowOverlay.BillBoardColor = new Color(new Vector4(1.0f, 1.0f, 1.0f, alpha));
-                // DEBUG
-                var msg = $"{alpha}";
-                //MyLog.Default.WriteLineAndConsole(msg);
-                MyAPIGateway.Utilities.ShowNotification(msg, 1000);
             }
             else
             {
