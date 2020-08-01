@@ -8,9 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Added changelog file.
+- Nothing!
 
-[Unreleased]: https://github.com//Stamina/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com//Stamina/compare/v0.2...HEAD
+
+
+## [0.2] - 2020-08-01
+### Added
+
+- An overlay that fades in as stamina gets low.
+- This changelog file.
+
+### Changed
+
+- Fixed low stamina on bots (wolves, spiders, etc.) being applied to the game host.
+  Should get less sudded deaths now.
+
+[0.2]: https://github.com/keyspace/Stamina/compare/v0.1.1...v0.2
 
 
 ## [0.1.1] - 2020-06-18
