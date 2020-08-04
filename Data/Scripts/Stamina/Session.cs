@@ -170,6 +170,13 @@ namespace Keyspace.Stamina
                 {
                     PlayerStatsDict.Add(steamId, new PlayerStats());
                 }
+
+                // In multiplayer mode, the object may not yet be initialised, so only update
+                // those with controlled entities.
+                if (player?.Controller?.ControlledEntity?.Entity == null)
+                {
+                    continue;
+                }
                 else
                 {
                     PlayerStatsDict[steamId].Recalculate(player);

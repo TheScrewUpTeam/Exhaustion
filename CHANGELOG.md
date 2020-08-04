@@ -10,7 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing!
 
-[Unreleased]: https://github.com//Stamina/compare/v0.2...HEAD
+[Unreleased]: https://github.com//Stamina/compare/v0.2.1...HEAD
+
+
+## [0.2.1] - 2020-08-05
+### Changed
+
+- Try not to crash multi-player servers on player log-in if data is not fully loaded.
+
+[0.2.1]: https://github.com/keyspace/Stamina/compare/v0.2...v0.2.1
 
 
 ## [0.2] - 2020-08-01
