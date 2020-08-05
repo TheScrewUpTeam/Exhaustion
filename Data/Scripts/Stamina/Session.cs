@@ -152,20 +152,15 @@ namespace Keyspace.Stamina
         {
             // TODO: add/remove dynamically?
             PlayerList.Clear();
-            MyAPIGateway.Players.GetPlayers(PlayerList);
+            // Fetch players that are not bots: they get the same Steam ID as the host/server,
+            // and don't have the logic to deal with stats anyway, so skip them.
+            MyAPIGateway.Players.GetPlayers(PlayerList, (player) => { return !player.IsBot; });
         }
 
         private void UpdateAllPlayerStats()
         {
             foreach (IMyPlayer player in PlayerList)
             {
-                // Monsters get the same Steam ID as the host/server, and don't have the
-                // logic to deal with stats anyway, so skip them.
-                if (player.IsBot)
-                {
-                    continue;
-                }
-
                 ulong steamId = player.SteamUserId;
 
                 if (!PlayerStatsDict.ContainsKey(steamId))
