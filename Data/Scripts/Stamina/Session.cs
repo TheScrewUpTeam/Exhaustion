@@ -40,8 +40,10 @@ namespace Keyspace.Stamina
             isServer = (MyAPIGateway.Session.OnlineMode == MyOnlineModeEnum.OFFLINE || MyAPIGateway.Multiplayer.IsServer);
             isDedicated = (MyAPIGateway.Utilities.IsDedicated && isServer);
 
+            MyLog.Default.WriteLineAndConsole($"isCreativeGame: {isCreativeGame}; isServer: {isServer}; isDedicated: {isDedicated}");
+
             if (!isDedicated)
-            { 
+            {
                 HudApi = new HudAPIv2();
                 HUD = new Hud(HudApi);
             }
@@ -173,11 +175,7 @@ namespace Keyspace.Stamina
 
                 // In multiplayer mode, the object may not yet be initialised, so only update
                 // those with controlled entities.
-                if (player?.Controller?.ControlledEntity?.Entity == null)
-                {
-                    continue;
-                }
-                else
+                if (player?.Controller?.ControlledEntity?.Entity != null)
                 {
                     PlayerStatsDict[steamId].Recalculate(player);
                 }
