@@ -7,6 +7,8 @@ using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRage.Library.Utils;
 using VRage.Utils;
+using static Draygo.API.HudAPIv2;
+using VRageRender.Messages;
 
 namespace Keyspace.Stamina
 {
@@ -28,6 +30,9 @@ namespace Keyspace.Stamina
 
         internal HudAPIv2 HudApi;
         internal Hud HUD;
+        internal MenuRootCategory _menuRoot;
+        internal MenuItem _movementToggle, _workToggle, _drivingToggle;
+        internal MenuSliderInput _costLow, _costMedium, _costHigh, _gainLow, _gainMedium, _gainHigh;
 
         private List<IMyPlayer> PlayerList;
         private Dictionary<ulong, PlayerStats> PlayerStatsDict;
@@ -44,8 +49,8 @@ namespace Keyspace.Stamina
 
             if (!isDedicated)
             {
-                HudApi = new HudAPIv2();
-                HUD = new Hud(HudApi);
+                HudApi = new HudAPIv2(OnHudReady);
+                HUD = new Hud();
             }
 
             if (isServer)
@@ -56,8 +61,130 @@ namespace Keyspace.Stamina
                 Config = StorageFile.Load<Config>("config.xml");
                 PlayerStatsDict = StorageFile.Load<PlayerStatsStorage>("stats.xml").ToDict();
 
-                MovementCosts.SetFromConfig(Config);
+                UpdateSettings();
             }
+        }
+
+        private void UpdateSettings() {
+            MovementCosts.SetFromConfig(Config);
+            WorkCosts.SetFromConfig(Config);
+        }
+
+        private void OnHudReady()
+        {
+            BuildSettingsMenu();
+            HUD.RenderNew();
+        }
+
+        private float NormalizeToSlider(float currentValue) {
+            float minSliderValue = 0.0005f;
+            float maxSliderValue = 0.0125f;
+
+            // Normalize the value to range between 0 and 1
+            float normalizedValue = (currentValue - minSliderValue) / (maxSliderValue - minSliderValue);
+
+            // Ensure that it stays between 0 and 1
+            normalizedValue = Math.Max(0.0f, normalizedValue);
+            normalizedValue = Math.Min(1.0f, normalizedValue);
+
+            return normalizedValue;
+        }
+
+        private float ConvertBackToOriginalValue(float sliderPercent)
+        {
+            float minSliderValue = 0.0005f;
+            float maxSliderValue = 0.0125f;
+
+            // Scale the slider value back to the original range (0.0005 to 0.0125)
+            float originalValue = minSliderValue + (sliderPercent * (maxSliderValue - minSliderValue));
+
+            return originalValue;
+        }
+
+        private void BuildSettingsMenu()
+        {
+            _menuRoot = new MenuRootCategory("Exhaustion Mod", MenuRootCategory.MenuFlag.PlayerMenu, "Exhaustion Mod Settings");
+
+            new MenuItem("<color=yellow>---General settings---", _menuRoot);
+
+            _movementToggle = new MenuItem($"Use Stamina for Movement: {(Config.UseStaminaMovement ? "<color=green>On" : "<color=red>Off")}", _menuRoot, () => {
+                Config.UseStaminaMovement = !Config.UseStaminaMovement;
+                _movementToggle.Text = $"Use Stamina for Movement: {(Config.UseStaminaMovement ? "<color=green>On" : "<color=red>Off")}";
+                UpdateSettings();
+            });
+            _workToggle = new MenuItem($"Use Stamina for Work: {(Config.UseStaminaWork ? "<color=green>On" : "<color=red>Off")}", _menuRoot, () => {
+                Config.UseStaminaWork = !Config.UseStaminaWork;
+                _workToggle.Text = $"Use Stamina for Work: {(Config.UseStaminaWork ? "<color=green>On" : "<color=red>Off")}";
+                UpdateSettings();
+            });
+            _drivingToggle = new MenuItem($"Use Stamina for Driving: {(Config.UseStaminaDriving ? "<color=green>On" : "<color=red>Off")}", _menuRoot, () => {
+                Config.UseStaminaDriving = !Config.UseStaminaDriving;
+                _drivingToggle.Text = $"Use Stamina for Driving: {(Config.UseStaminaDriving ? "<color=green>On" : "<color=red>Off")}";
+                UpdateSettings();
+            });
+
+            new MenuItem("<color=yellow>---Action costs---", _menuRoot);
+
+            _costLow = new MenuSliderInput($"Cost Low: <color=green>{Config.CostLow * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostLow)), "Low Actions Cost/s", (v) => {
+                Config.CostLow = ConvertBackToOriginalValue(v) * -1;
+                _costLow.Text = $"Cost Low: <color=green>{Config.CostLow * 400}/s";
+                _costLow.InitialPercent = NormalizeToSlider(Math.Abs(Config.CostLow));
+                UpdateSettings();
+            }, (p) => {
+                var converted = ConvertBackToOriginalValue(p);
+                return ConvertBackToOriginalValue(p) * -400;
+            });
+
+            _costMedium = new MenuSliderInput($"Cost Medium: <color=green>{Config.CostMedium * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostMedium)), "Medium Actions Cost/s", (v) => {
+                Config.CostMedium = ConvertBackToOriginalValue(v) * -1;
+                _costMedium.Text = $"Cost Medium: <color=green>{Config.CostMedium * 400}/s";
+                _costMedium.InitialPercent = NormalizeToSlider(Math.Abs(Config.CostMedium));
+                UpdateSettings();
+            }, (p) => {
+                var converted = ConvertBackToOriginalValue(p);
+                return ConvertBackToOriginalValue(p) * -400;
+            });
+
+            _costHigh = new MenuSliderInput($"Cost High: <color=green>{Config.CostHigh * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostHigh)), "High Actions Cost/s", (v) => {
+                Config.CostHigh = ConvertBackToOriginalValue(v) * -1;
+                _costHigh.Text = $"Cost High: <color=green>{Config.CostHigh * 400}/s";
+                _costHigh.InitialPercent = NormalizeToSlider(Math.Abs(Config.CostHigh));
+                UpdateSettings();
+            }, (p) => {
+                var converted = ConvertBackToOriginalValue(p);
+                return ConvertBackToOriginalValue(p) * -400;
+            });
+
+            new MenuItem("<color=yellow>---States gains---", _menuRoot);
+
+            _gainLow = new MenuSliderInput($"Gain Low: <color=green>{Config.GainLow * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainLow)), "Low States Gain/s", (v) => {
+                Config.GainLow = ConvertBackToOriginalValue(v) * -1;
+                _gainLow.Text = $"Gain Low: <color=green>{Config.GainLow * 400}/s";
+                _gainLow.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainLow));
+                UpdateSettings();
+            }, (p) => {
+                var converted = ConvertBackToOriginalValue(p);
+                return ConvertBackToOriginalValue(p) * -400;
+            });
+             _gainMedium = new MenuSliderInput($"Gain Medium: <color=green>{Config.GainMedium * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainMedium)), "Medium States Gain/s", (v) => {
+                Config.GainLow = ConvertBackToOriginalValue(v) * -1;
+                _gainMedium.Text = $"Gain Medium: <color=green>{Config.GainMedium * 400}/s";
+                _gainMedium.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainMedium));
+                UpdateSettings();
+            }, (p) => {
+                var converted = ConvertBackToOriginalValue(p);
+                return ConvertBackToOriginalValue(p) * -400;
+            });
+             _gainHigh = new MenuSliderInput($"Gain High: <color=green>{Config.GainHigh * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainHigh)), "High States Gain/s", (v) => {
+                Config.GainLow = ConvertBackToOriginalValue(v) * -1;
+                _gainHigh.Text = $"Gain High: <color=green>{Config.GainHigh * 400}/s";
+                _gainHigh.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainHigh));
+                UpdateSettings();
+            }, (p) => {
+                var converted = ConvertBackToOriginalValue(p);
+                return ConvertBackToOriginalValue(p) * -400;
+            });
+
         }
 
         public override void SaveData()
@@ -86,7 +213,6 @@ namespace Keyspace.Stamina
             Networking?.Unregister();
             Networking = null;
 
-            HUD?.Unload();
             HudApi?.Unload();
 
             PlayerList?.Clear();

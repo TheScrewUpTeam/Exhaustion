@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using VRage.Utils;
+using Sandbox.Game.Components;
+using Sandbox.Game.Entities;
 
 namespace Keyspace.Stamina
 {
@@ -19,6 +21,11 @@ namespace Keyspace.Stamina
         public float CostMedium { get; set; }
         public float CostHigh { get; set; }
 
+        public bool UseStaminaMovement {get; set; }
+        public bool UseStaminaWork  {get; set; }
+        public bool UseStaminaDriving  {get; set; }
+
+
         public Config()
         {
             // Defaults; these properties will remain as below if the config couldn't be loaded.
@@ -29,6 +36,9 @@ namespace Keyspace.Stamina
             CostLow    = -0.0005f;
             CostMedium = -0.0025f;
             CostHigh   = -0.0050f;
+            UseStaminaMovement = true;
+            UseStaminaWork = true;
+            UseStaminaDriving = true;
         }
     }
 
@@ -58,6 +68,14 @@ namespace Keyspace.Stamina
 
         internal PlayerStatsStorage(Dictionary<ulong, PlayerStats> playerStatsDict)
         {
+            MyEntityStatComponent statComp = MyAPIGateway.Session.Player?.Character?.Components.Get<MyEntityStatComponent>();
+
+            MyEntityStat health;
+
+            statComp.TryGetStat(MyStringHash.GetOrCompute("Health"), out health);
+
+            health.Increase(1, null);
+
             PlayerStatElements = new StatElement[playerStatsDict.Count];
 
             int i = 0;

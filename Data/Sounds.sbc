@@ -1,0 +1,17 @@
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Blueprints.xsd">
+    <Sounds>
+        <Sound>
+            <Id>
+                <TypeId>MyObjectBuilder_AudioDefinition</TypeId>
+                <SubtypeId>MyStaminaWarningSound</SubtypeId>
+            </Id>
+            <Category>HUD</Category>
+            <Volume>1</Volume>
+            <Waves>
+                <Wave Type="D2">
+                    <Start>Sounds/StaminaLowWarning.wav</Start>
+                </Wave>
+            </Waves>
+        </Sound>
+    </Sounds>
+</Definitions>
