@@ -48,7 +48,7 @@ Instructions for accessing and editing the config file are provided in the mod f
 ## License
 
 All files not otherwise marked are licensed under [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)  
-Authored and extended by The Screw Up Team with improvements by [Your Name or Team Name].
+Authored and extended by The Screw Up Team.
 
 This mod is based on:
 
