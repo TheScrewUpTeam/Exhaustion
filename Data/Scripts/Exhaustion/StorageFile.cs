@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using VRage.Utils;
-using Sandbox.Game.Components;
-using Sandbox.Game.Entities;
 
-namespace Keyspace.Stamina
+namespace TSUT.Exhaustion
 {
     /// <summary>
     /// Represents the server-provided configuration, loadable from a file.
@@ -24,6 +22,12 @@ namespace Keyspace.Stamina
         public bool UseStaminaMovement {get; set; }
         public bool UseStaminaWork  {get; set; }
         public bool UseStaminaDriving  {get; set; }
+        public bool ShowSeparateIndicator  {get; set; }
+
+        public float StaminaAfterDeath { get; set; }
+        public float GravityInfluence { get; set; }
+        public float FatigueDamage { get; set; }
+        public int UpdateIntervalTicks { get; set; }
 
 
         public Config()
@@ -36,9 +40,16 @@ namespace Keyspace.Stamina
             CostLow    = -0.0005f;
             CostMedium = -0.0025f;
             CostHigh   = -0.0050f;
+
             UseStaminaMovement = true;
             UseStaminaWork = true;
             UseStaminaDriving = true;
+            ShowSeparateIndicator = true;
+
+            StaminaAfterDeath = 0.5f; // 50% stamina after respawn
+            GravityInfluence = 0.1f; // 10% gravity influence on stamina
+            FatigueDamage = 20f; // 2% damage per second when stamina is 0
+            UpdateIntervalTicks = 6; // ~100 ms update interval
         }
     }
 
@@ -68,14 +79,6 @@ namespace Keyspace.Stamina
 
         internal PlayerStatsStorage(Dictionary<ulong, PlayerStats> playerStatsDict)
         {
-            MyEntityStatComponent statComp = MyAPIGateway.Session.Player?.Character?.Components.Get<MyEntityStatComponent>();
-
-            MyEntityStat health;
-
-            statComp.TryGetStat(MyStringHash.GetOrCompute("Health"), out health);
-
-            health.Increase(1, null);
-
             PlayerStatElements = new StatElement[playerStatsDict.Count];
 
             int i = 0;

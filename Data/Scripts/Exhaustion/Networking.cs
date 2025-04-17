@@ -8,7 +8,7 @@ using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 
-namespace Keyspace.Stamina
+namespace TSUT.Exhaustion
 {
     public class Networking
     {

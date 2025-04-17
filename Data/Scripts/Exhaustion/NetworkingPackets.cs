@@ -5,7 +5,7 @@ using ProtoBuf;
 using Sandbox.ModAPI;
 //using VRage.Utils;
 
-namespace Keyspace.Stamina
+namespace TSUT.Exhaustion
 {
     // tag numbers in ProtoInclude collide with numbers from ProtoMember in the same class, therefore they must be unique.
     [ProtoInclude(1000, typeof(StatsPacket))]
@@ -52,7 +52,7 @@ namespace Keyspace.Stamina
             //MyLog.Default.WriteLineAndConsole(msg);
             //MyAPIGateway.Utilities.ShowNotification(msg, 3000);
 
-            Stamina_Session.Instance.HUD?.Update(Number);
+            Exhaustion_Session.Instance.HUD?.Update(Number);
 
             return false;
         }

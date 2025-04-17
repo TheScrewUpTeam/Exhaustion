@@ -4,43 +4,50 @@ using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
-using VRage.Audio;
 using VRage.Game;
 using VRage.Game.ModAPI;
 using VRage.Utils;
 using VRageMath;
 
-namespace Keyspace.Stamina
+namespace TSUT.Exhaustion
 {
     /// <summary>
     /// Stats of a player character.
     /// </summary>
     public class PlayerStats
     {
+        public PlayerStats(IMyPlayer player, MyEntityStat staminaStat)
+        {            
+            this.player = player;
+            stamina = staminaStat;
+        }
+
+        public IMyPlayer player;
+        public MyEntityStat stamina;
+
         private static bool warningSoundPlayed = false;
         private static MyStringHash fatigueDamage = MyStringHash.GetOrCompute("Fatigue");
         private static readonly float gravityConstant = 9.81f * MyPerGameSettings.CharacterGravityMultiplier;
-        
-        // Tracked stats - must be properties for easy save/load to/from XML.
-        public float Stamina { get; set; }
+        Dictionary<MyStringHash, HashSet<int>> knownEffects = new Dictionary<MyStringHash, HashSet<int>>();
 
-        public PlayerStats(float stamina)
+        private static Config config;
+
+        public static void UpdateConfig(Config config)
         {
-            Stamina = stamina;
+            PlayerStats.config = config;
         }
 
-        public PlayerStats()
+        public void Recalculate()
         {
-            Stamina = 1.0f;
-        }
+            if (stamina == null) {
+                return;
+            }
 
-        public void Recalculate(IMyPlayer player)
-        {
             // If character died, then reset stats and skip further calculations, so
             // they're not potentially negative on re-spawn.
             if (player.Character.IsDead)
             {
-                Stamina = 0.5f;  // TODO: configurable!
+                stamina.Value = PlayerStats.config.StaminaAfterDeath;
                 MovementCosts.Died();
                 return;
             }
@@ -55,8 +62,7 @@ namespace Keyspace.Stamina
             float gravityInfluence;
             if (staminaDelta < 0.0f)
             {
-                // MAGICNUM 0.1f: arbitrary non-negative to limit bonus in low-gravity (TODO: configurable!).
-                gravityInfluence = Math.Max(0.1f, player.Character.Physics.Gravity.Length() / gravityConstant);
+                gravityInfluence = Math.Max(PlayerStats.config.GravityInfluence, player.Character.Physics.Gravity.Length() / gravityConstant);
             }
             else
             {
@@ -77,30 +83,59 @@ namespace Keyspace.Stamina
             }
 
             // DEBUG
-            //MyAPIGateway.Utilities.ShowNotification($"Delta: {staminaDelta}, Work: {workCost}", 1000);
+            //MyAPIGateway.Utilities.ShowNotification($"Delta: {staminaDelta}, Work: {workCost}, Value: {stamina.Value}", 1000);
 
-            Stamina += staminaDelta * gravityInfluence + workCost;
+            float result = staminaDelta * gravityInfluence + workCost;
 
             // Apply negative stamina as damage, with some scaling.
-            if (Stamina < 0.0f)
+            if (stamina.Value + result < 0.0f)
             {
-                // MAGICNUM 5.0f: chosen arbitrarily (TODO: configurable!).
-                player.Character.DoDamage(-Stamina * 5.0f, fatigueDamage, true);
+                player.Character.DoDamage(-result * PlayerStats.config.FatigueDamage, fatigueDamage, true);
+            }
+
+            if (result > 0) {
+                stamina.Increase(result, null);
+            } else {
+                stamina.Decrease(-result, null);
             }
 
             // Play warning sound
-            if (Stamina < 0.25f && !warningSoundPlayed)
+            if (stamina.Value < 0.25f && !warningSoundPlayed)
             {
                 string entityName = (player.Character as VRage.Game.ModAPI.Interfaces.IMyControllableEntity).Entity.Name;
                 MyVisualScriptLogicProvider.PlaySingleSoundAtEntity("MyStaminaWarningSound", entityName);
                 warningSoundPlayed = true;
             }
-            if (Stamina > 0.25f) {
+            if (stamina.Value > 0.25f) {
                 warningSoundPlayed = false;
             }
 
             // Clamp stamina between -100% (unattainable enough) and current health.
-            Stamina = Math.Max(-1.0f, Math.Min(Stamina, player.Character.Integrity / 100.0f));
+            stamina.Value = Math.Max(-1.0f, Math.Min(stamina.Value, player.Character.Integrity / 100.0f));
+        }
+
+        internal void ProcessStat(MyEntityStat meelStat)
+        {
+            if (meelStat == null) {
+                return;
+            }
+            HashSet<int> cachedEffects;
+            if (!knownEffects.TryGetValue(meelStat.StatId, out cachedEffects)) {
+                cachedEffects = new HashSet<int>();
+                knownEffects.Add(meelStat.StatId, cachedEffects);
+            }
+            if (meelStat.HasAnyEffect()) {
+                var effects = meelStat.GetEffects();
+                foreach(var effectKVP in effects) {
+                    if (cachedEffects.Contains(effectKVP.Key))
+                        continue;
+                    cachedEffects.Add(effectKVP.Key);
+                    MyEntityStatRegenEffect effect = effectKVP.Value;
+                    stamina.AddEffect(effect.Amount, effect.Interval, effect.Duration);
+                }
+            } else if (cachedEffects.Count > 0) {
+                    cachedEffects.Clear();
+            }
         }
     }
 
@@ -194,8 +229,8 @@ namespace Keyspace.Stamina
                 // Assembly VRage.Game, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
                 // C:\Program Files (x86)\Steam\steamapps\common\SpaceEngineers\Bin64\VRage.Game.dll
                 { MyCharacterMovementEnum.Standing,                costNone   },
-                { MyCharacterMovementEnum.Sitting,                 gainMed   },
-                { MyCharacterMovementEnum.Crouching,               gainMed   },
+                { MyCharacterMovementEnum.Sitting,                 gainLow   },
+                { MyCharacterMovementEnum.Crouching,               gainLow   },
                 { MyCharacterMovementEnum.Flying,                  costLow    },
                 { MyCharacterMovementEnum.Falling,                 gainLow    },
                 { MyCharacterMovementEnum.Jump,                    costHigh   },
@@ -285,6 +320,10 @@ namespace Keyspace.Stamina
                 if (subtype.Contains("bed") || subtype.Contains("medical"))
                 {
                     return gainHigh;
+                }
+                if (subtype.Contains("seat") || subtype.Contains("chair"))
+                {
+                    return gainMed;
                 }
                 if (subtype.Contains("cockpit"))
                 {
