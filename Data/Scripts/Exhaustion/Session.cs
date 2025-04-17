@@ -18,8 +18,8 @@ namespace TSUT.Exhaustion
     {
         public static Exhaustion_Session Instance;
 
-        // MAGICNUM 47275: last 5 digits of Workshop-published mod ID.
-        internal Networking Networking = new Networking(47275);
+        // MAGICNUM 16464: last 5 digits of Workshop-published mod ID.
+        internal Networking Networking = new Networking(16464);
         internal Config Config;
 
         private bool isCreativeGame;
@@ -67,6 +67,7 @@ namespace TSUT.Exhaustion
         private void UpdateSettings() {
             MovementCosts.SetFromConfig(Config);
             WorkCosts.SetFromConfig(Config);
+            PlayerStats.UpdateConfig(Config);
             HUD.ReactOnSettings(Config);
         }
 

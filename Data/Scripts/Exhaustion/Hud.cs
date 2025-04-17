@@ -1,6 +1,8 @@
 ﻿using Draygo.API;
+using Sandbox.Game.Gui;
 using Sandbox.ModAPI;
 using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using VRage.Utils;
 using VRageMath;
@@ -30,6 +32,7 @@ namespace TSUT.Exhaustion
         private bool lowStaminaWarned = false;
         private Color noColor;
         private bool onceRendered = false;
+        private bool lastHudState = true;
 
         public Hud()
         {
@@ -85,6 +88,16 @@ namespace TSUT.Exhaustion
             if (hudStaminaFill != null && hudStaminaLabel != null) {
                 UpdateNew();
                 refreshNeeded = false;
+            }
+
+            bool currentHudState = MyAPIGateway.Session.Config.HudState != 0;
+            if (currentHudState != lastHudState) {
+                if (currentHudState) {
+                    RenderNew();
+                } else {
+                    ClearInterface();
+                }
+                lastHudState = currentHudState;
             }
         }
 
