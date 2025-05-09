@@ -305,31 +305,31 @@ namespace TSUT.Exhaustion
             new MenuItem("<color=yellow>---States gains---", _menuRoot);
 
             _gainLow = new MenuSliderInput($"Gain Low: <color=green>{Config.GainLow * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainLow)), "Low States Gain/s", (v) => {
-                Config.GainLow = ConvertBackToOriginalValue(v) * -1;
+                Config.GainLow = ConvertBackToOriginalValue(v);
                 _gainLow.Text = $"Gain Low: <color=green>{Config.GainLow * 400}/s";
                 _gainLow.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainLow));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return ConvertBackToOriginalValue(p) * -400;
+                return converted * 400;
             });
              _gainMedium = new MenuSliderInput($"Gain Medium: <color=green>{Config.GainMedium * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainMedium)), "Medium States Gain/s", (v) => {
-                Config.GainLow = ConvertBackToOriginalValue(v) * -1;
+                Config.GainMedium = ConvertBackToOriginalValue(v);
                 _gainMedium.Text = $"Gain Medium: <color=green>{Config.GainMedium * 400}/s";
                 _gainMedium.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainMedium));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return ConvertBackToOriginalValue(p) * -400;
+                return converted * 400;
             });
              _gainHigh = new MenuSliderInput($"Gain High: <color=green>{Config.GainHigh * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainHigh)), "High States Gain/s", (v) => {
-                Config.GainLow = ConvertBackToOriginalValue(v) * -1;
+                Config.GainHigh = ConvertBackToOriginalValue(v);
                 _gainHigh.Text = $"Gain High: <color=green>{Config.GainHigh * 400}/s";
                 _gainHigh.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainHigh));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return ConvertBackToOriginalValue(p) * -400;
+                return converted * 400;
             });
 
         }
