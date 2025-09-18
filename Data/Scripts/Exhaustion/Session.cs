@@ -181,10 +181,8 @@ namespace TSUT.Exhaustion
                 if (player == null || player.Character == null || player.Character.Components == null) continue;
                 MyCharacterStatComponent statComp = player.Character.Components.Get<MyCharacterStatComponent>();
                 MyEntityStat staminaStat;
-                MyEntityStat foodStat;
 
                 statComp.TryGetStat(MyStringHash.GetOrCompute("Stamina"), out staminaStat);
-                statComp.TryGetStat(MyStringHash.GetOrCompute("SpaceCharacterFood"), out foodStat);
 
                 ulong steamId = player.SteamUserId;
 
@@ -198,7 +196,7 @@ namespace TSUT.Exhaustion
                 if (player?.Controller?.ControlledEntity?.Entity != null)
                 {
                     PlayerStatsDict[steamId].Recalculate();
-                    PlayerStatsDict[steamId].ProcessStat(foodStat);
+                    PlayerStatsDict[steamId].ProcessStat(statComp.Food);
                 }
             }
         }
@@ -216,8 +214,8 @@ namespace TSUT.Exhaustion
         }
 
         private float NormalizeToSlider(float currentValue) {
-            float minSliderValue = 0.0005f;
-            float maxSliderValue = 0.0125f;
+            float minSliderValue = 0.05f;
+            float maxSliderValue = 1.25f;
 
             // Normalize the value to range between 0 and 1
             float normalizedValue = (currentValue - minSliderValue) / (maxSliderValue - minSliderValue);
@@ -231,8 +229,8 @@ namespace TSUT.Exhaustion
 
         private float ConvertBackToOriginalValue(float sliderPercent)
         {
-            float minSliderValue = 0.0005f;
-            float maxSliderValue = 0.0125f;
+            float minSliderValue = 0.05f;
+            float maxSliderValue = 1.25f;
 
             // Scale the slider value back to the original range (0.0005 to 0.0125)
             float originalValue = minSliderValue + (sliderPercent * (maxSliderValue - minSliderValue));
@@ -270,64 +268,64 @@ namespace TSUT.Exhaustion
 
             new MenuItem("<color=yellow>---Action costs---", _menuRoot);
 
-            _costLow = new MenuSliderInput($"Cost Low: <color=green>{Config.CostLow * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostLow)), "Low Actions Cost/s", (v) => {
+            _costLow = new MenuSliderInput($"Cost Low: <color=green>{Config.CostLow * 4}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostLow)), "Low Actions Cost/s", (v) => {
                 Config.CostLow = ConvertBackToOriginalValue(v) * -1;
-                _costLow.Text = $"Cost Low: <color=green>{Config.CostLow * 400}/s";
+                _costLow.Text = $"Cost Low: <color=green>{Config.CostLow * 4}/s";
                 _costLow.InitialPercent = NormalizeToSlider(Math.Abs(Config.CostLow));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return ConvertBackToOriginalValue(p) * -400;
+                return converted * -4;
             });
 
-            _costMedium = new MenuSliderInput($"Cost Medium: <color=green>{Config.CostMedium * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostMedium)), "Medium Actions Cost/s", (v) => {
+            _costMedium = new MenuSliderInput($"Cost Medium: <color=green>{Config.CostMedium * 4}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostMedium)), "Medium Actions Cost/s", (v) => {
                 Config.CostMedium = ConvertBackToOriginalValue(v) * -1;
-                _costMedium.Text = $"Cost Medium: <color=green>{Config.CostMedium * 400}/s";
+                _costMedium.Text = $"Cost Medium: <color=green>{Config.CostMedium * 4}/s";
                 _costMedium.InitialPercent = NormalizeToSlider(Math.Abs(Config.CostMedium));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return ConvertBackToOriginalValue(p) * -400;
+                return converted * -4;
             });
 
-            _costHigh = new MenuSliderInput($"Cost High: <color=green>{Config.CostHigh * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostHigh)), "High Actions Cost/s", (v) => {
+            _costHigh = new MenuSliderInput($"Cost High: <color=green>{Config.CostHigh * 4}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.CostHigh)), "High Actions Cost/s", (v) => {
                 Config.CostHigh = ConvertBackToOriginalValue(v) * -1;
-                _costHigh.Text = $"Cost High: <color=green>{Config.CostHigh * 400}/s";
+                _costHigh.Text = $"Cost High: <color=green>{Config.CostHigh * 4}/s";
                 _costHigh.InitialPercent = NormalizeToSlider(Math.Abs(Config.CostHigh));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return ConvertBackToOriginalValue(p) * -400;
+                return converted * -4;
             });
 
             new MenuItem("<color=yellow>---States gains---", _menuRoot);
 
-            _gainLow = new MenuSliderInput($"Gain Low: <color=green>{Config.GainLow * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainLow)), "Low States Gain/s", (v) => {
+            _gainLow = new MenuSliderInput($"Gain Low: <color=green>{Config.GainLow * 4}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainLow)), "Low States Gain/s", (v) => {
                 Config.GainLow = ConvertBackToOriginalValue(v);
-                _gainLow.Text = $"Gain Low: <color=green>{Config.GainLow * 400}/s";
+                _gainLow.Text = $"Gain Low: <color=green>{Config.GainLow * 4}/s";
                 _gainLow.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainLow));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return converted * 400;
+                return converted * 4;
             });
-             _gainMedium = new MenuSliderInput($"Gain Medium: <color=green>{Config.GainMedium * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainMedium)), "Medium States Gain/s", (v) => {
+             _gainMedium = new MenuSliderInput($"Gain Medium: <color=green>{Config.GainMedium * 4}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainMedium)), "Medium States Gain/s", (v) => {
                 Config.GainMedium = ConvertBackToOriginalValue(v);
-                _gainMedium.Text = $"Gain Medium: <color=green>{Config.GainMedium * 400}/s";
+                _gainMedium.Text = $"Gain Medium: <color=green>{Config.GainMedium * 4}/s";
                 _gainMedium.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainMedium));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return converted * 400;
+                return converted * 4;
             });
-             _gainHigh = new MenuSliderInput($"Gain High: <color=green>{Config.GainHigh * 400}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainHigh)), "High States Gain/s", (v) => {
+             _gainHigh = new MenuSliderInput($"Gain High: <color=green>{Config.GainHigh * 4}/s", _menuRoot, NormalizeToSlider(Math.Abs(Config.GainHigh)), "High States Gain/s", (v) => {
                 Config.GainHigh = ConvertBackToOriginalValue(v);
-                _gainHigh.Text = $"Gain High: <color=green>{Config.GainHigh * 400}/s";
+                _gainHigh.Text = $"Gain High: <color=green>{Config.GainHigh * 4}/s";
                 _gainHigh.InitialPercent = NormalizeToSlider(Math.Abs(Config.GainHigh));
                 UpdateSettings();
             }, (p) => {
                 var converted = ConvertBackToOriginalValue(p);
-                return converted * 400;
+                return converted * 4;
             });
 
         }

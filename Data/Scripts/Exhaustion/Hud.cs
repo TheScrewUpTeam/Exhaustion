@@ -17,7 +17,7 @@ namespace TSUT.Exhaustion
         private const float DEFAULT_BAR_HEIGHT = 0.035f;
         private const float DEFAULT_SPACING = 0.01f;
         private static readonly Vector2 DEFAULT_BASE_POS = new Vector2(-0.1f, -0.50f);
-        private const float LOW_STAMINA_THRESHOLD = 0.25f;
+        private const float LOW_STAMINA_THRESHOLD = .25f;
         private const float OVERLAY_MAX_ALPHA = 0.95f;
         private const int STAMINA_LABEL_CAPACITY = 4; // For values like "100%"
 
@@ -91,10 +91,10 @@ namespace TSUT.Exhaustion
 
         public void Update(float num)
         {
-            if (num < 0 || num > 1)
-                num = 1;
+            if (num < 0 || num > 100)
+                num = 100;
 
-            stamina = num;
+            stamina = num / 100f;
             refreshNeeded = true;
         }
 

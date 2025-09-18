@@ -33,20 +33,20 @@ namespace TSUT.Exhaustion
         public Config()
         {
             // Defaults; these properties will remain as below if the config couldn't be loaded.
-            GainHigh   =  0.0050f;
-            GainMedium =  0.0025f;
-            GainLow    =  0.0005f;
-            CostNone   =  0.0000f;
-            CostLow    = -0.0005f;
-            CostMedium = -0.0025f;
-            CostHigh   = -0.0050f;
+            GainHigh   =  0.50f;
+            GainMedium =  0.25f;
+            GainLow    =  0.05f;
+            CostNone   =  0.00f;
+            CostLow    = -0.05f;
+            CostMedium = -0.25f;
+            CostHigh   = -0.50f;
 
             UseStaminaMovement = true;
             UseStaminaWork = true;
             UseStaminaDriving = true;
             ShowSeparateIndicator = true;
 
-            StaminaAfterDeath = 0.5f; // 50% stamina after respawn
+            StaminaAfterDeath = 50f; // 50% stamina after respawn
             GravityInfluence = 0.1f; // 10% gravity influence on stamina
             FatigueDamage = 20f; // 2% damage per second when stamina is 0
             UpdateIntervalTicks = 6; // ~100 ms update interval

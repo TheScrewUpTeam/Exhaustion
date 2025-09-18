@@ -1,5 +1,6 @@
 ﻿using Sandbox.Common.ObjectBuilders;
 using Sandbox.Game;
+using Sandbox.Game.Components;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System;
@@ -17,7 +18,7 @@ namespace TSUT.Exhaustion
     public class PlayerStats
     {
         public PlayerStats(IMyPlayer player, MyEntityStat staminaStat)
-        {            
+        {
             this.player = player;
             stamina = staminaStat;
         }
@@ -39,7 +40,8 @@ namespace TSUT.Exhaustion
 
         public void Recalculate()
         {
-            if (stamina == null) {
+            if (stamina == null)
+            {
                 return;
             }
 
@@ -71,14 +73,16 @@ namespace TSUT.Exhaustion
             }
 
 
-            float workCost = 0f;            
+            float workCost = 0f;
             IMyHandheldGunObject<MyDeviceBase> tool = player.Character.EquippedTool as IMyHandheldGunObject<MyDeviceBase>;
 
-            if (tool != null && tool.IsShooting) {
+            if (tool != null && tool.IsShooting)
+            {
                 workCost = WorkCosts.GetStaminaCost(tool);
             }
 
-            if (workCost > 0f && staminaDelta > 0f) {
+            if (workCost > 0f && staminaDelta > 0f)
+            {
                 staminaDelta = 0f;
             }
 
@@ -90,51 +94,71 @@ namespace TSUT.Exhaustion
             // Apply negative stamina as damage, with some scaling.
             if (stamina.Value + result < 0.0f)
             {
-                player.Character.DoDamage(-result * PlayerStats.config.FatigueDamage, fatigueDamage, true);
+
+                MyCharacterStatComponent statComp = player.Character.Components.Get<MyCharacterStatComponent>();
+
+                if (statComp.Food != null)
+                {
+                    statComp.Food.Decrease(-result, fatigueDamage);
+                }
+                else
+                {
+                    player.Character.DoDamage(-result * PlayerStats.config.FatigueDamage, fatigueDamage, true);
+                }
             }
 
-            if (result > 0) {
+            if (result > 0)
+            {
                 stamina.Increase(result, null);
-            } else {
+            }
+            else
+            {
                 stamina.Decrease(-result, null);
             }
 
             // Play warning sound
-            if (stamina.Value < 0.25f && !warningSoundPlayed)
+            if (stamina.Value < 25f && !warningSoundPlayed)
             {
                 string entityName = (player.Character as VRage.Game.ModAPI.Interfaces.IMyControllableEntity).Entity.Name;
                 MyVisualScriptLogicProvider.PlaySingleSoundAtEntity("MyStaminaWarningSound", entityName);
                 warningSoundPlayed = true;
             }
-            if (stamina.Value > 0.25f) {
+            if (stamina.Value > 25f)
+            {
                 warningSoundPlayed = false;
             }
 
             // Clamp stamina between -100% (unattainable enough) and current health.
-            stamina.Value = Math.Max(-1.0f, Math.Min(stamina.Value, player.Character.Integrity / 100.0f));
+            stamina.Value = Math.Max(-100f, Math.Min(stamina.Value, player.Character.Integrity));
         }
 
         internal void ProcessStat(MyEntityStat meelStat)
         {
-            if (meelStat == null) {
+            if (meelStat == null)
+            {
                 return;
             }
             HashSet<int> cachedEffects;
-            if (!knownEffects.TryGetValue(meelStat.StatId, out cachedEffects)) {
+            if (!knownEffects.TryGetValue(meelStat.StatId, out cachedEffects))
+            {
                 cachedEffects = new HashSet<int>();
                 knownEffects.Add(meelStat.StatId, cachedEffects);
             }
-            if (meelStat.HasAnyEffect()) {
+            if (meelStat.HasAnyEffect())
+            {
                 var effects = meelStat.GetEffects();
-                foreach(var effectKVP in effects) {
+                foreach (var effectKVP in effects)
+                {
                     if (cachedEffects.Contains(effectKVP.Key))
                         continue;
                     cachedEffects.Add(effectKVP.Key);
                     MyEntityStatRegenEffect effect = effectKVP.Value;
-                    stamina.AddEffect(effect.Amount, effect.Interval, effect.Duration);
+                    stamina.AddEffect(effect.Amount * 5, effect.Interval, effect.Duration);
                 }
-            } else if (cachedEffects.Count > 0) {
-                    cachedEffects.Clear();
+            }
+            else if (cachedEffects.Count > 0)
+            {
+                cachedEffects.Clear();
             }
         }
     }
@@ -149,17 +173,18 @@ namespace TSUT.Exhaustion
 
         internal static void SetFromConfig(Config config)
         {
-            costLow  = config.CostLow;
-            costMed  = config.CostMedium;
+            costLow = config.CostLow;
+            costMed = config.CostMedium;
             costHigh = config.CostHigh;
             costNone = config.CostNone;
-            
+
             WorkCostEnabled = config.UseStaminaWork;
         }
 
-        internal static float GetStaminaCost(IMyHandheldGunObject<MyDeviceBase> tool) 
+        internal static float GetStaminaCost(IMyHandheldGunObject<MyDeviceBase> tool)
         {
-            if (!WorkCostEnabled) {
+            if (!WorkCostEnabled)
+            {
                 return costNone;
             }
             var defId = tool.DefinitionId;
@@ -190,7 +215,7 @@ namespace TSUT.Exhaustion
         private static MyCharacterMovementEnum prevMovementState = MyCharacterMovementEnum.Standing;
 
         private static double lastControlTime = 0f;
-        
+
         private static float gainHigh;
         private static float gainMed;
         private static float gainLow;
@@ -212,16 +237,16 @@ namespace TSUT.Exhaustion
             DrivingCostEnabled = config.UseStaminaDriving;
 
             gainHigh = config.GainHigh;
-            gainMed  = config.GainMedium;
-            gainLow  = config.GainLow;
+            gainMed = config.GainMedium;
+            gainLow = config.GainLow;
             costNone = config.CostNone;
-            costLow  = config.CostLow;
-            costMed  = config.CostMedium;
+            costLow = config.CostLow;
+            costMed = config.CostMedium;
             costHigh = config.CostHigh;
 
-            walk       = gainLow;
+            walk = gainLow;
             crouchWalk = costLow;
-            run        = costLow;
+            run = costLow;
 
             Map = new Dictionary<MyCharacterMovementEnum, float>
             {
@@ -271,13 +296,15 @@ namespace TSUT.Exhaustion
             };
         }
 
-        internal static void Died() {
+        internal static void Died()
+        {
             prevMovementState = MyCharacterMovementEnum.Died;
         }
 
-        internal static float CockpitStaminaUsage(IMyCharacter character) 
+        internal static float CockpitStaminaUsage(IMyCharacter character)
         {
-            if (!DrivingCostEnabled) {
+            if (!DrivingCostEnabled)
+            {
                 return gainMed;
             }
             var controller = character.Parent as IMyCockpit;
@@ -286,10 +313,12 @@ namespace TSUT.Exhaustion
                 bool isDriving = controller.MoveIndicator != Vector3.Zero || controller.RotationIndicator != Vector2.Zero || controller.RollIndicator != 0f;
                 bool isUsingTools = CheckIfGridToolsAreActive(controller);
 
-                if (isDriving || isUsingTools) {
+                if (isDriving || isUsingTools)
+                {
                     lastControlTime = MyAPIGateway.Session.ElapsedPlayTime.TotalSeconds;
                     return costLow;
-                } else if (MyAPIGateway.Session.ElapsedPlayTime.TotalSeconds - lastControlTime > 3f)
+                }
+                else if (MyAPIGateway.Session.ElapsedPlayTime.TotalSeconds - lastControlTime > 3f)
                     return gainMed;
             }
 
@@ -331,7 +360,8 @@ namespace TSUT.Exhaustion
                 }
             }
 
-            if (!MovementCostEnabled) {
+            if (!MovementCostEnabled)
+            {
                 return costNone;
             }
 

@@ -25,11 +25,13 @@
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Stamina</SubtypeId>
+                    <SubtypeId>SpaceCharacterStamina</SubtypeId>
                 </Stat>
             </Stats>
             <Scripts>
                 <Script>SpaceStatEffect</Script>
+                <Script>RadiationStat</Script>
+                <Script>FoodStat</Script>
             </Scripts>
         </EntityComponent>
         <EntityComponent xsi:type="MyObjectBuilder_EntityStatComponentDefinition">
@@ -56,11 +58,13 @@
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Stamina</SubtypeId>
+                    <SubtypeId>SpaceCharacterStamina</SubtypeId>
                 </Stat>
             </Stats>
             <Scripts>
                 <Script>SpaceStatEffect</Script>
+                <Script>RadiationStat</Script>
+                <Script>FoodStat</Script>
             </Scripts>
         </EntityComponent>
     </EntityComponents>
