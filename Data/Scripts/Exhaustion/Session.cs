@@ -116,6 +116,7 @@ namespace TSUT.Exhaustion
 
         public override void UpdateAfterSimulation()
         {
+            // HUD?.RenderPlayerBuffs();
             if (isCreativeGame || !isServer)
             {
                 return;
@@ -177,15 +178,13 @@ namespace TSUT.Exhaustion
         {
             foreach (IMyPlayer player in PlayerList)
             {
-                MyEntityStatComponent statComp = player.Character.Components.Get<MyEntityStatComponent>();
-
+                if (player == null || player.Character == null || player.Character.Components == null) continue;
+                MyCharacterStatComponent statComp = player.Character.Components.Get<MyCharacterStatComponent>();
                 MyEntityStat staminaStat;
-                MyEntityStat waterStat;
                 MyEntityStat foodStat;
 
                 statComp.TryGetStat(MyStringHash.GetOrCompute("Stamina"), out staminaStat);
-                statComp.TryGetStat(MyStringHash.GetOrCompute("Water"), out waterStat);
-                statComp.TryGetStat(MyStringHash.GetOrCompute("Food"), out foodStat);
+                statComp.TryGetStat(MyStringHash.GetOrCompute("SpaceCharacterFood"), out foodStat);
 
                 ulong steamId = player.SteamUserId;
 
@@ -199,7 +198,6 @@ namespace TSUT.Exhaustion
                 if (player?.Controller?.ControlledEntity?.Entity != null)
                 {
                     PlayerStatsDict[steamId].Recalculate();
-                    PlayerStatsDict[steamId].ProcessStat(waterStat);
                     PlayerStatsDict[steamId].ProcessStat(foodStat);
                 }
             }
@@ -213,7 +211,7 @@ namespace TSUT.Exhaustion
                 Networking.SendToPlayer(
                     new StatsPacket(PlayerStatsDict[steamId].stamina.Value),
                     steamId
-                    );
+                );
             }
         }
 

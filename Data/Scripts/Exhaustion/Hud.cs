@@ -1,8 +1,6 @@
 ﻿using Draygo.API;
-using Sandbox.Game.Gui;
 using Sandbox.ModAPI;
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
 using VRage.Utils;
 using VRageMath;
@@ -18,7 +16,7 @@ namespace TSUT.Exhaustion
         private const float DEFAULT_BAR_WIDTH = 0.2f;
         private const float DEFAULT_BAR_HEIGHT = 0.035f;
         private const float DEFAULT_SPACING = 0.01f;
-        private static readonly Vector2 DEFAULT_BASE_POS = new Vector2(-0.7f, -0.60f);
+        private static readonly Vector2 DEFAULT_BASE_POS = new Vector2(-0.1f, -0.50f);
         private const float LOW_STAMINA_THRESHOLD = 0.25f;
         private const float OVERLAY_MAX_ALPHA = 0.95f;
         private const int STAMINA_LABEL_CAPACITY = 4; // For values like "100%"
@@ -83,7 +81,7 @@ namespace TSUT.Exhaustion
             hudIcon?.DeleteMessage();
             hudBackground?.DeleteMessage();
             hudStaminaLabel?.DeleteMessage();
-            
+
             hudStaminaLabel = null;
             hudStaminaFill = null;
             hudStaminaLowOverlay = null;

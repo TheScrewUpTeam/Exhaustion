@@ -13,15 +13,15 @@
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Water</SubtypeId>
+                    <SubtypeId>SpaceCharacterRadiation</SubtypeId>
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Food</SubtypeId>
+                    <SubtypeId>SpaceCharacterRadiationImmunity</SubtypeId>
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Sleep</SubtypeId>
+                    <SubtypeId>SpaceCharacterFood</SubtypeId>
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
@@ -44,15 +44,15 @@
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Water</SubtypeId>
+                    <SubtypeId>SpaceCharacterRadiation</SubtypeId>
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Food</SubtypeId>
+                    <SubtypeId>SpaceCharacterRadiationImmunity</SubtypeId>
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
-                    <SubtypeId>Sleep</SubtypeId>
+                    <SubtypeId>SpaceCharacterFood</SubtypeId>
                 </Stat>
                 <Stat>
                     <TypeId>MyObjectBuilder_EntityStat</TypeId>
