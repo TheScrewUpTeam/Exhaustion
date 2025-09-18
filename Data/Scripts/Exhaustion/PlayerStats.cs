@@ -99,7 +99,7 @@ namespace TSUT.Exhaustion
 
                 if (statComp.Food != null)
                 {
-                    statComp.Food.Decrease(-result, fatigueDamage);
+                    statComp.Food.Decrease(-result / 5, fatigueDamage);
                 }
                 else
                 {
